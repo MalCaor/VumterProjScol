@@ -113,25 +113,17 @@ function novColumn(){
   	    this.vol_mask_area       = [null];
   	    this.labelsTxt_VOL       = [null];
         this.list_lign           = [];
-        this.nbr_lign            = 0;
       },
-      verif_change : function(message, graph) {
+      verif_change : function(vumeter_stats, graph) {
       	// verif if there is change and if yes draw
 
       	// TODO : make verif_change func
 
-          // the JSON message from the ws
-          var vumeter_stats = JSON.parse(message.data);
-
           // foreach lign, verif
-          /* VERIF LIGNS
-          list_lign.forEach(element => {
-              // it verif all lign
-              if(element.verif){
-                  // if it's different, redraw
-                  element.draw();
-              }
-          });*/
+          this.list_lign.forEach(function(element){
+            //console.log("square");
+            element.verif_change(vumeter_stats, graph);
+          });
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// init the collum (/!\ init must only be call once when the vumeter appear /!\)
@@ -141,8 +133,6 @@ function novColumn(){
         // clear the vars
         this.clear_var();
 
-        // init a nbr of lign
-        this.nbr_lign = 16;
         //console.log(this.nbr_lign);
         for (var i = 0; i < this.nbr_lign; i++) {
           //console.log("lign");
@@ -257,13 +247,13 @@ function novColumn(){
           }*/
 
       },
-      update : function(message, graph){
+      update : function(vumeter_stats, graph){
       	// update the column
 
       	// TODO : make update
 
           // verif chang
-          this.verif_change(message, graph);
+          this.verif_change(vumeter_stats, graph);
       }
   }
 
@@ -288,6 +278,10 @@ function novlign(){
       labelsBox_CH : [null],
       // the number
       number : [null],
+      // the level
+      level : [null],
+      // prev state
+      prev_vumeter_stats : [null],
 
 
       // function
@@ -296,22 +290,34 @@ function novlign(){
       },
       draw : function(graph, x, y, i){
           // draw
-          // chan square
-          var size = 17;
-          //console.log("squareDraw");
-          this.labelsBox_CH = graph.rect(size, size).move(x, y);
-          this.labelsBox_CH.attr({fill: '#0faa33'});
-          // draw number
-          this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
-          var idxArray = idx-1;
-          //this.labelsBox_CH = labelsBox_CH.addClass('vumeter-labelsBox_LimiterOff_CH');
+          this.draw_labelBoxAndNumber(graph, x, y, i)
+          var idxArray = idx-1; // je sais pas ce que c'est mais j'ai peur de le suprimer
+      },
+      draw_labelBoxAndNumber : function(graph, x, y, i){
+        // draw the level box and number
+
+        // chan square
+        var size = 17;
+
+        //console.log("squareDraw");
+        this.labelsBox_CH = graph.rect(size, size).move(x, y);
+        this.labelsBox_CH.attr({fill: '#0faa33'});
+
+        // draw number
+        this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
+      },
+      draw_levelBox : function(graph){
+        // draw a level box
       },
       update : function(){
           // update
           this.verif_change();
       },
-      verif_change : function(){
+      verif_change : function(vumeter_stats, graph){
           // verif change
+          if(this.prev_vumeter_stats == null){
+
+          }
       }
 
   }
@@ -338,7 +344,10 @@ function init(graph){
 	list_column[3].column_Name = "HDMI / DOWNMIX";
 
   // nrb ligns for each column
-  list_column[0].nbr_lign = 5;
+  list_column[0].nbr_lign = 10;
+  list_column[1].nbr_lign = 8;
+  list_column[2].nbr_lign = 15;
+  list_column[3].nbr_lign = 5;
 
 
 	/* total graph area */
@@ -408,9 +417,10 @@ function wsOpen() {
 }
 
 function wsOnMessage(message, graph){
+  var vumeter_stats = JSON.parse(message.data);
   list_column.forEach(function(element){
     // Update each column
-    element.update(message, graph);
+    element.update(vumeter_stats, graph);
   });
 }
 
