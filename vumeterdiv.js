@@ -280,6 +280,8 @@ function novlign(){
       number : [null],
       // the level
       level : [null],
+      // level box background
+      levelBox : [null],
       // prev state
       prev_vumeter_stats : [null],
 
@@ -290,7 +292,13 @@ function novlign(){
       },
       draw : function(graph, x, y, i){
           // draw
-          this.draw_labelBoxAndNumber(graph, x, y, i)
+
+          // box and number
+          this.draw_labelBoxAndNumber(graph, x, y, i);
+
+          // level box background
+          this.draw_levelBox(graph, x, y);
+
           var idxArray = idx-1; // je sais pas ce que c'est mais j'ai peur de le suprimer
       },
       draw_labelBoxAndNumber : function(graph, x, y, i){
@@ -306,8 +314,11 @@ function novlign(){
         // draw number
         this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
       },
-      draw_levelBox : function(graph){
+      draw_levelBox : function(graph, x, y){
         // draw a level box
+        size_x = 200;
+        size_y = 17;
+        this.levelBox = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#484f4a"});
       },
       update : function(){
           // update
