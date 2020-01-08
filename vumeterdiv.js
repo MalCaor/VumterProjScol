@@ -96,7 +96,8 @@ function novColumn(){
       vol_background_area : [null],
       vol_mask_area       : [null],
       labelsTxt_VOL       : [null],
-      list_lign           : [null],
+      list_lign           : [],
+      nbr_lign            : 0,
 
       // function
       clear_var : function() {
@@ -111,7 +112,8 @@ function novColumn(){
   	    this.vol_background_area = [null];
   	    this.vol_mask_area       = [null];
   	    this.labelsTxt_VOL       = [null];
-        this. list_lign          = [null];
+        this.list_lign           = [];
+        this.nbr_lign            = 0;
       },
       verif_change : function(message, graph) {
       	// verif if there is change and if yes draw
@@ -131,16 +133,25 @@ function novColumn(){
               }
           });*/
       },
-      init : function(){
+      init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// init the collum (/!\ init must only be call once when the vumeter appear /!\)
 
       	// TODO : make init
 
-          // clear the vars
-          this.clear_var();
+        // clear the vars
+        this.clear_var();
 
-      	// call draw func
-      	this.draw();
+        // init a nbr of lign
+        this.nbr_lign = 16;
+        //console.log(this.nbr_lign);
+        for (var i = 0; i < this.nbr_lign; i++) {
+          //console.log("lign");
+          this.list_lign.push(novlign());
+        }
+
+        // call draw func
+        this.draw(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
+
       },
       draw : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// draw the base (/!\ draw must only be call once in init /!\)
@@ -151,6 +162,17 @@ function novColumn(){
           this.drawColumnName(graph, idx, sub_bar_x);
           // draw the background
           this.drawBack(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
+
+          // draw all the ligns
+          var y_lign = sub_bar_y;
+          var x_lign = sub_bar_x-115;
+          var i = 1;
+          this.list_lign.forEach(function(element){
+            //console.log("square");
+            element.draw(graph, x_lign, y_lign, i);
+            i = i + 1;
+            y_lign = y_lign + 29;
+          });
       },
       drawColumnName : function(graph, idx, sub_bar_x){
           // draw the column name
@@ -262,16 +284,27 @@ function novlign(){
           'AUX_LF', 'AUX_RF', 'DML', 'DMR', 'Mono','DM_LT','DM_RT',
           'Left','Right','AUX_M', 'AUX_BI_L', 'AUX_BI_R', 'LSC','RSC','LS1','RS1'
       ],
+      // the green box
+      labelsBox_CH : [null],
+      // the number
+      number : [null],
+
 
       // function
       init : function(){
           // init
       },
-      draw : function(){
+      draw : function(graph, x, y, i){
           // draw
-
           // chan square
-
+          var size = 17;
+          //console.log("squareDraw");
+          this.labelsBox_CH = graph.rect(size, size).move(x, y);
+          this.labelsBox_CH.attr({fill: '#0faa33'});
+          // draw number
+          this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
+          var idxArray = idx-1;
+          //this.labelsBox_CH = labelsBox_CH.addClass('vumeter-labelsBox_LimiterOff_CH');
       },
       update : function(){
           // update
@@ -299,10 +332,13 @@ function init(graph){
 	]
 
 	// set up the column
-	list_column[0].column_Name      = "DECODER";
-	list_column[1].column_Name  = "OUTPUTS 01 to 16";
+	list_column[0].column_Name = "DECODER";
+	list_column[1].column_Name = "OUTPUTS 01 to 16";
 	list_column[2].column_Name = "OUTPUTS 17 to 32";
 	list_column[3].column_Name = "HDMI / DOWNMIX";
+
+  // nrb ligns for each column
+  list_column[0].nbr_lign = 5;
 
 
 	/* total graph area */
@@ -327,8 +363,8 @@ function init(graph){
     var sub_pos_offset_y = 500;
     var sub_pos_offset_x = 50;
     list_column.forEach(function(element){
-        //draw
-        element.draw(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y); // pas ça
+        //init and draw
+        element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
         // sub_bar_x
         sub_bar_x = sub_bar_x + 2*(g_x/8);
         // sub_pos_offset_x
@@ -346,7 +382,7 @@ function wsOpen() {
     vumeterdiv.websocket = new WebSocket(url);
     var websocket = vumeterdiv.websocket;
     var graph = vumeterdiv.graph;
-    init(graph); // tmp : pas ça!, en fait si
+
     websocket.onopen = function () {
         //console.log('websocket opened');
         // close and re-open websocket after 2 min
@@ -367,6 +403,8 @@ function wsOpen() {
     websocket.onmessage = function(message) {
         wsOnMessage(message, graph);
     };
+
+    init(graph);
 }
 
 function wsOnMessage(message, graph){
