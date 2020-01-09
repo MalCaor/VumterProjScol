@@ -42,6 +42,12 @@ var idx = 0;
 // list_column
 var list_column = [];
 
+/* const labels */
+var LBL_IN = "in";
+var LBL_OUT = "out";
+var LBL_AUX = "aux";
+var LBL_AUXIN = "aux_in";
+
 
 // usful fonction
 //WARNING: String.prototype.padStart(x, y) is not working on Internet Explorer and Edge
@@ -118,11 +124,13 @@ function novColumn(){
       	// verif if there is change and if yes draw
 
       	// TODO : make verif_change func
-
+        //console.log(vumeter_stats.toString());
           // foreach lign, verif
+          var i = 0;
           this.list_lign.forEach(function(element){
             //console.log("square");
-            element.verif_change(vumeter_stats, graph);
+            element.verif_change(vumeter_stats[i], graph);
+            i++;
           });
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
@@ -159,7 +167,7 @@ function novColumn(){
           var i = 1;
           this.list_lign.forEach(function(element){
             //console.log("square");
-            element.draw(graph, x_lign, y_lign, i);
+            element.init(graph, x_lign, y_lign, i);
             i = i + 1;
             y_lign = y_lign + 29;
           });
@@ -282,13 +290,34 @@ function novlign(){
       level : [null],
       // level box background
       levelBox : [null],
+      levelBoxBoudry : [null],
       // prev state
       prev_vumeter_stats : [null],
+      x : [null],
+      y : [null],
 
 
       // function
-      init : function(){
+      init : function(graph, x_lign, y_lign, i){
+          // clear the vars
+          this.clearVar();
           // init
+          this.draw(graph, x_lign, y_lign, i);
+      },
+      clearVar : function(){
+        this.labelsBox_CH = [null];
+        // the number
+        this.number = [null];
+        // the level
+        this.level = [null];
+        // level box background
+        this.levelBox = [null];
+        this.levelBoxBoudry = [null];
+        // prev state
+        this.prev_vumeter_stats = [null];
+        this.x = [null];
+        this.y = [null];
+
       },
       draw : function(graph, x, y, i){
           // draw
@@ -308,29 +337,56 @@ function novlign(){
         var size = 17;
 
         //console.log("squareDraw");
-        this.labelsBox_CH = graph.rect(size, size).move(x, y);
-        this.labelsBox_CH.attr({fill: '#0faa33'});
+        this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#0faa33'});
 
         // draw number
         this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
       },
       draw_levelBox : function(graph, x, y){
         // draw a level box
+        console.log("draw");
+
+        // you can change the size here, the boudry and interior adapt automaticaly
         size_x = 200;
         size_y = 17;
-        this.levelBox = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#484f4a"});
+        // draw the boundry
+        this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#fcf9f9"});
+        // draw the inside of the level box
+        this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
+        //draw level empty
+        this.level = graph.rect();
+        // remember the loc
+        this.x = x;
+        this.y = y;
       },
-      update : function(){
+      drawlevel : function(graph){
+        // draw the level
+      },
+      update : function(vumeter_stats, graph){
           // update
           this.verif_change();
       },
       verif_change : function(vumeter_stats, graph){
+          db = dbLevel(vumeter_stats[0]);
+          barLevel = this.dbBar(db);
+          size_y = 17;
           // verif change
-          if(this.prev_vumeter_stats == null){
-
+          if(db == null){
+            // first time so there is no prev
+            this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+            this.level = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
+          }else if (this.prev_vumeter_stats == db) {
+            // do nothing because nothing change
+          }else if (this.prev_vumeter_stats !== db) {
+            this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+            this.level = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
           }
+          // replace the prev_vumeter_stats with the new one
+          this.prev_vumeter_stats = db;
+      },
+      dbBar : function(db){
+        return ((100 + db)*197/100);
       }
-
   }
   return lign;
 }
@@ -355,10 +411,10 @@ function init(graph){
 	list_column[3].column_Name = "HDMI / DOWNMIX";
 
   // nrb ligns for each column
-  list_column[0].nbr_lign = 10;
-  list_column[1].nbr_lign = 8;
-  list_column[2].nbr_lign = 15;
-  list_column[3].nbr_lign = 5;
+  list_column[0].nbr_lign = 16;
+  list_column[1].nbr_lign = 16;
+  list_column[2].nbr_lign = 16;
+  list_column[3].nbr_lign = 0;
 
 
 	/* total graph area */
@@ -428,11 +484,16 @@ function wsOpen() {
 }
 
 function wsOnMessage(message, graph){
+  //console.log("wsOnMessage()");
   var vumeter_stats = JSON.parse(message.data);
-  list_column.forEach(function(element){
-    // Update each column
-    element.update(vumeter_stats, graph);
-  });
+  updateCol(vumeter_stats, graph);
+}
+function updateCol(vumeter_stats, graph){
+  list_column[0].update(vumeter_stats[LBL_IN], graph);
+  //console.log(vumeter_stats[LBL_IN]);
+  var sliceto = 16; // it's the slice between 1-16 to 17-32
+  list_column[1].update(Array.prototype.slice.call(vumeter_stats[LBL_OUT], sliceto), graph);
+  list_column[2].update(Array.prototype.slice.call(vumeter_stats[LBL_OUT], -sliceto), graph);
 }
 
 function wsReopen() {
@@ -540,4 +601,18 @@ function vumeterHide() {
         vumeterdiv.websocket.close();
     }
     $('#vumeterdiv').hide();
+}
+function dbLevel(level) {
+    /* compute level to dB level */
+    var dbLevel;
+    if(level <= 0) {
+        dbLevel = -100.0;
+    }else {
+        var level = parseFloat(level);
+        dbLevel = 20 * (log10(level/65535));
+        if(dbLevel > -0.1) {
+            dbLevel = 0.0;
+        }
+    }
+    return dbLevel;
 }
