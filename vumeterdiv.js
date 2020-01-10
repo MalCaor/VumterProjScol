@@ -118,23 +118,24 @@ function novColumn(){
   	    this.vol_background_area = [null];
   	    this.vol_mask_area       = [null];
   	    this.labelsTxt_VOL       = [null];
-        this.list_lign           = [];
       },
       verif_change : function(vumeter_stats, graph) {
       	// verif if there is change and if yes draw
 
       	// TODO : make verif_change func
-        //console.log(vumeter_stats.toString());
-          // foreach lign, verif
-          var i = 0;
-          this.list_lign.forEach(function(element){
-            // forEach lign
-            if(i < vumeter_stats.length){
-              // and if there is an info
-              element.verif_change(vumeter_stats[i], graph);
-              i++;
-            }
-          });
+
+        // reset vars
+        // foreach lign, verif
+        var i = 0;
+        this.list_lign.forEach(function(element){
+          // forEach lign
+          if(i < vumeter_stats.length){
+            // and if there is an info
+            element.verif_change(vumeter_stats[i][0], graph);
+            i++;
+          }
+        });
+        this.clear_var();
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// init the collum (/!\ init must only be call once when the vumeter appear /!\)
@@ -245,21 +246,6 @@ function novColumn(){
           } else if (this.column_Name == "HDMI / DOWNMIX" ) {
               this.vol_background_area[idxArray]    = vol_background_area;
           }
-
-          // draw black mask over background gradient
-          /*var vol_mask_area = background_grad.bbox();
-          vol_mask_area = graph.rect(barheight, dc_y).move(sub_pos_offset_x+tmp_last_max_pos_x+dleft+dc_x-barheight, sub_pos_offset_y+dctop);
-          if        (this.column_Name == "DECODER") {
-              decoder.vol_mask_area[idxArray]       = vol_mask_area;
-          } else if (this.column_Name == "LBL_OUT") {
-              outputs_01_16.vol_mask_area[idxArray] = vol_mask_area;
-          } else if (this.column_Name == "OUTPUTS 01 to 16") {
-              outputs_17_32.vol_mask_area[idxArray] = vol_mask_area;
-          } else if (this.column_Name == "OUTPUTS 17 to 32") {
-              outputs_aux.vol_mask_area[idxArray]   = vol_mask_area;
-          } else if (this.column_Name == "HDMI / DOWNMIX") {
-              inputs_aux.vol_mask_area[idxArray]    = vol_mask_area;
-          }*/
 
       },
       update : function(vumeter_stats, graph){
@@ -374,7 +360,7 @@ function novlign(){
           this.verif_change(vumeter_stats, graph);
       },
       verif_change : function(stats, graph){
-          db = dbLevel(stats[0]);
+          db = dbLevel(stats);
           barLevel = this.dbBar(db);
           size_y = 17;
           // verif change
@@ -454,7 +440,6 @@ function init(graph){
         element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
         // sub_bar_x
         if (i < 3){
-          console.log("i");
           sub_bar_x = sub_bar_x + 2*(g_x/8);
         }
         i++;
@@ -507,9 +492,9 @@ function updateCol(vumeter_stats, graph){
   list_column[0].update(vumeter_stats[LBL_IN], graph);
   //console.log(vumeter_stats[LBL_IN]);
   var sliceto = 16; // it's the slice between 1-16 to 17-32
-  list_column[1].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], sliceto)), graph);
-  list_column[2].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], -sliceto)), graph);
-  list_column[3].update(vumeter_stats[LBL_AUX].concat(vumeter_stats[LBL_AUXIN]), graph);
+  list_column[1].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
+  list_column[2].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
+  list_column[3].update(vumeter_stats[LBL_AUX], graph);
   list_column[4].update(vumeter_stats[LBL_AUXIN], graph);
 }
 
