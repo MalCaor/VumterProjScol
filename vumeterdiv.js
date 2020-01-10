@@ -128,9 +128,12 @@ function novColumn(){
           // foreach lign, verif
           var i = 0;
           this.list_lign.forEach(function(element){
-            //console.log("square");
-            element.verif_change(vumeter_stats[i], graph);
-            i++;
+            // forEach lign
+            if(i < vumeter_stats.length){
+              // and if there is an info
+              element.verif_change(vumeter_stats[i], graph);
+              i++;
+            }
           });
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
@@ -162,7 +165,11 @@ function novColumn(){
           this.drawBack(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
 
           // draw all the ligns
-          var y_lign = sub_bar_y;
+          if (this.column_Name == "AUX In"){
+            var y_lign = sub_bar_y + 150;
+          }else {
+            var y_lign = sub_bar_y;
+          }
           var x_lign = sub_bar_x-115;
           var i = 1;
           this.list_lign.forEach(function(element){
@@ -182,7 +189,7 @@ function novColumn(){
           // draw on the graph
           var labelCol = null;
           if(column_name == "AUX In") {
-              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), ((char_pos_x_y_column_name.labelSize_y/2)+column_name_AUXIn_pos_y_offset));
+              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), ((char_pos_x_y_column_name.labelSize_y/2)+column_name_AUXIn_pos_y_offset) + 20);
           }else if(column_name != "AUX In") {
               var labelCol = graph.text((column_name).toString()).move((sub_bar_x), (char_pos_x_y_column_name.labelSize_y/2));
           }
@@ -364,10 +371,10 @@ function novlign(){
       },
       update : function(vumeter_stats, graph){
           // update
-          this.verif_change();
+          this.verif_change(vumeter_stats, graph);
       },
-      verif_change : function(vumeter_stats, graph){
-          db = dbLevel(vumeter_stats[0]);
+      verif_change : function(stats, graph){
+          db = dbLevel(stats[0]);
           barLevel = this.dbBar(db);
           size_y = 17;
           // verif change
@@ -401,7 +408,8 @@ function init(graph){
 		decoder      = novColumn(),
 		outputs1_16  = novColumn(),
 		outputs17_32 = novColumn(),
-		HDMI_DOWNMIX = novColumn()
+		HDMI_DOWNMIX = novColumn(),
+    AUX_In       = novColumn()
 	]
 
 	// set up the column
@@ -409,12 +417,14 @@ function init(graph){
 	list_column[1].column_Name = "OUTPUTS 01 to 16";
 	list_column[2].column_Name = "OUTPUTS 17 to 32";
 	list_column[3].column_Name = "HDMI / DOWNMIX";
+  list_column[4].column_Name = "AUX In";
 
   // nrb ligns for each column
   list_column[0].nbr_lign = 16;
   list_column[1].nbr_lign = 16;
   list_column[2].nbr_lign = 16;
-  list_column[3].nbr_lign = 16;
+  list_column[3].nbr_lign = 4;
+  list_column[4].nbr_lign = 5;
 
 
 	/* total graph area */
@@ -438,11 +448,16 @@ function init(graph){
     // sub_pos_offset_y
     var sub_pos_offset_y = 500;
     var sub_pos_offset_x = 50;
+    var i=0;
     list_column.forEach(function(element){
         //init and draw
         element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
         // sub_bar_x
-        sub_bar_x = sub_bar_x + 2*(g_x/8);
+        if (i < 3){
+          console.log("i");
+          sub_bar_x = sub_bar_x + 2*(g_x/8);
+        }
+        i++;
         // sub_pos_offset_x
         //sub_pos_offset_x = sub_pos_offset_x + 200;
     });
@@ -495,6 +510,7 @@ function updateCol(vumeter_stats, graph){
   list_column[1].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], sliceto)), graph);
   list_column[2].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], -sliceto)), graph);
   list_column[3].update(vumeter_stats[LBL_AUX].concat(vumeter_stats[LBL_AUXIN]), graph);
+  list_column[4].update(vumeter_stats[LBL_AUXIN], graph);
 }
 
 function wsReopen() {
