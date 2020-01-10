@@ -135,6 +135,18 @@ function novColumn(){
             i++;
           }
         });
+        // limiter warning
+        if (this.column_Name == "OUTPUTS 01 to 16" || this.column_Name == "OUTPUTS 17 to 32"){
+          var i = 0;
+          this.list_lign.forEach(function(element){
+            // forEach lign
+            if(i < vumeter_stats.length){
+              // and if there is an info
+              element.limiterCheck(vumeter_stats[i][2], graph);
+              i++;
+            }
+          });
+        }
         this.clear_var();
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
@@ -145,9 +157,8 @@ function novColumn(){
         // clear the vars
         this.clear_var();
 
-        //console.log(this.nbr_lign);
         for (var i = 0; i < this.nbr_lign; i++) {
-          //console.log("lign");
+          // create the lignes
           this.list_lign.push(novlign());
         }
 
@@ -174,7 +185,7 @@ function novColumn(){
           var x_lign = sub_bar_x-115;
           var i = 1;
           this.list_lign.forEach(function(element){
-            //console.log("square");
+            // draw the square
             element.init(graph, x_lign, y_lign, i);
             i = i + 1;
             y_lign = y_lign + 29;
@@ -328,7 +339,6 @@ function novlign(){
         // chan square
         var size = 17;
 
-        //console.log("squareDraw");
         this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#0faa33'});
 
         // draw number
@@ -336,7 +346,6 @@ function novlign(){
       },
       draw_levelBox : function(graph, x, y){
         // draw a level box
-        console.log("draw");
 
         // you can change the size here, the boudry and interior adapt automaticaly
         size_x = 200;
@@ -378,6 +387,13 @@ function novlign(){
       },
       dbBar : function(db){
         return ((100 + db)*197/100);
+      },
+      limiterCheck : function(stats, graph){
+        if(stats != 0){
+          this.labelsBox_CH.attr({fill: "#f70202"});
+        }else {
+          this.labelsBox_CH.attr({fill: "#0faa33"});
+        }
       }
   }
   return lign;
@@ -459,7 +475,6 @@ function wsOpen() {
     var graph = vumeterdiv.graph;
 
     websocket.onopen = function () {
-        //console.log('websocket opened');
         // close and re-open websocket after 2 min
         // to avoid stacking too many frames in buffer when computer is slow
         reopen_timeout = setTimeout(wsReopen, 2 * 60 * 1000);
@@ -483,13 +498,12 @@ function wsOpen() {
 }
 
 function wsOnMessage(message, graph){
-  //console.log("wsOnMessage()");
   var vumeter_stats = JSON.parse(message.data);
   updateCol(vumeter_stats, graph);
 }
 function updateCol(vumeter_stats, graph){
+  // update the each columns
   list_column[0].update(vumeter_stats[LBL_IN], graph);
-  //console.log(vumeter_stats[LBL_IN]);
   var sliceto = 16; // it's the slice between 1-16 to 17-32
   list_column[1].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
   list_column[2].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
