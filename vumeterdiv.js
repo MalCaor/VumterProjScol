@@ -292,8 +292,6 @@ function novlign(){
 
       // function
       init : function(graph, x_lign, y_lign, i){
-          // clear the vars
-          this.clearVar();
           // init
           this.draw(graph, x_lign, y_lign, i);
       },
@@ -303,6 +301,7 @@ function novlign(){
         this.number = [null];
         // the level
         this.level = [null];
+        this.levelex = [null];
         // level box background
         this.levelBox = [null];
         this.levelBoxBoudry = [null];
@@ -364,15 +363,15 @@ function novlign(){
           barLevel = this.dbBar(db);
           size_y = 17;
           // verif change
-          if(db == null){
+          if(this.prev_vumeter_stats == null){
             // first time so there is no prev
             this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            this.level = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
+            //this.levelex = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
           }else if (this.prev_vumeter_stats == db) {
             // do nothing because nothing change
           }else if (this.prev_vumeter_stats !== db) {
-            this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            this.level = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
+            this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+            //this.levelex.size((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
           }
           // replace the prev_vumeter_stats with the new one
           this.prev_vumeter_stats = db;
