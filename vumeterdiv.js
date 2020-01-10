@@ -414,7 +414,7 @@ function init(graph){
   list_column[0].nbr_lign = 16;
   list_column[1].nbr_lign = 16;
   list_column[2].nbr_lign = 16;
-  list_column[3].nbr_lign = 0;
+  list_column[3].nbr_lign = 16;
 
 
 	/* total graph area */
@@ -492,8 +492,9 @@ function updateCol(vumeter_stats, graph){
   list_column[0].update(vumeter_stats[LBL_IN], graph);
   //console.log(vumeter_stats[LBL_IN]);
   var sliceto = 16; // it's the slice between 1-16 to 17-32
-  list_column[1].update(Array.prototype.slice.call(vumeter_stats[LBL_OUT], sliceto), graph);
-  list_column[2].update(Array.prototype.slice.call(vumeter_stats[LBL_OUT], -sliceto), graph);
+  list_column[1].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], sliceto)), graph);
+  list_column[2].update((Array.prototype.slice.call(vumeter_stats[LBL_OUT], -sliceto)), graph);
+  list_column[3].update(vumeter_stats[LBL_AUX].concat(vumeter_stats[LBL_AUXIN]), graph);
 }
 
 function wsReopen() {
