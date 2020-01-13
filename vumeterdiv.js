@@ -299,11 +299,14 @@ function novlign(){
       prev_vumeter_stats : [null],
       x : [null],
       y : [null],
+      dbNum : [null],
 
 
       // function
       init : function(graph, x_lign, y_lign, i){
           // init
+          console.log("je clear les var");
+          this.clearVar();
           this.draw(graph, x_lign, y_lign, i);
       },
       clearVar : function(){
@@ -356,6 +359,7 @@ function novlign(){
         this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
         //draw level empty
         this.level = graph.rect();
+        this.dbNum = graph.text("").move(x + 22, y + 13).attr("font-size", "13");
         // remember the loc
         this.x = x;
         this.y = y;
@@ -374,13 +378,17 @@ function novlign(){
           // verif change
           if(this.prev_vumeter_stats == null){
             // first time so there is no prev
-            this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            //this.levelex = graph.rect((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
+            //console.log("he you stop right there !");
+            //this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+            // the db number
+            //console.log("coucou");
+            //this.dbNum = graph.text((db).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
           }else if (this.prev_vumeter_stats == db) {
-            // do nothing because nothing change
+            // do nothing because nothing change, var... var never change
           }else if (this.prev_vumeter_stats !== db) {
             this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            //this.levelex.size((200 - barLevel - 4), size_y - 4).move(this.x + 22 + barLevel, this.y + 2).attr({fill: "#484f4a"});
+            // the db number
+            this.dbNum.node.textContent = (db.toString());
           }
           // replace the prev_vumeter_stats with the new one
           this.prev_vumeter_stats = db;
