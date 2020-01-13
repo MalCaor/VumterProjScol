@@ -521,10 +521,10 @@ function updateCol(vumeter_stats, graph){
   // update the each columns
   list_column[0].update(vumeter_stats[LBL_IN], graph);
   var sliceto = 16; // it's the slice between 1-16 to 17-32
-  list_column[1].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
-  list_column[2].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
-  list_column[3].update(vumeter_stats[LBL_AUX], graph);
-  list_column[4].update(vumeter_stats[LBL_AUXIN], graph);
+  list_column[3].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
+  list_column[4].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
+  list_column[1].update(vumeter_stats[LBL_AUX], graph);
+  list_column[2].update(vumeter_stats[LBL_AUXIN], graph);
 }
 
 function wsReopen() {
