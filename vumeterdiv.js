@@ -172,7 +172,7 @@ function novColumn(){
       	// TODO : make draw
         // make the HDMI an AUX coll go down
           if (this.column_Name == "AUX In" || this.column_Name == "HDMI / DOWNMIX"){
-            sub_bar_y = sub_bar_y + 170;
+            sub_bar_y = sub_bar_y + 260;
           }
           if(this.column_Name == "AUX In"){
             sub_bar_y = sub_bar_y + 150;
@@ -190,6 +190,11 @@ function novColumn(){
           y_lign = y_lign + 29;
           this.list_lign.forEach(function(element){
             // draw the square
+            if(i == 17){
+              // if more than 16 go on the other collum
+              y_lign = sub_bar_y + 27;
+              x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
+            }
             element.init(graph, x_lign, y_lign, i);
             i = i + 1;
             y_lign = y_lign + 29;
@@ -432,11 +437,11 @@ function init(graph){
   list_column[2].column_Name = "AUX In";
 
   // nrb ligns for each column
-  list_column[0].nbr_lign = 16;
+  list_column[0].nbr_lign = 24;
   list_column[3].nbr_lign = 16;
   list_column[4].nbr_lign = 16;
   list_column[1].nbr_lign = 4;
-  list_column[2].nbr_lign = 5;
+  list_column[2].nbr_lign = 2;
 
 
 	/* total graph area */
