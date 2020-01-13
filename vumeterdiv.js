@@ -423,17 +423,17 @@ function init(graph){
 
 	// set up the column
 	list_column[0].column_Name = "DECODER";
-	list_column[1].column_Name = "OUTPUTS 01 to 16";
-	list_column[2].column_Name = "OUTPUTS 17 to 32";
-	list_column[3].column_Name = "HDMI / DOWNMIX";
-  list_column[4].column_Name = "AUX In";
+	list_column[3].column_Name = "OUTPUTS 01 to 16";
+	list_column[4].column_Name = "OUTPUTS 17 to 32";
+	list_column[1].column_Name = "HDMI / DOWNMIX";
+  list_column[2].column_Name = "AUX In";
 
   // nrb ligns for each column
   list_column[0].nbr_lign = 16;
-  list_column[1].nbr_lign = 16;
-  list_column[2].nbr_lign = 16;
-  list_column[3].nbr_lign = 4;
-  list_column[4].nbr_lign = 5;
+  list_column[3].nbr_lign = 16;
+  list_column[4].nbr_lign = 16;
+  list_column[1].nbr_lign = 4;
+  list_column[2].nbr_lign = 5;
 
 
 	/* total graph area */
@@ -460,12 +460,12 @@ function init(graph){
     var i=0;
     list_column.forEach(function(element){
         //init and draw
-        element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
-        // sub_bar_x
-        if (i < 3){
+        if (element.column_Name !== "AUX In" && i !=0){
           sub_bar_x = sub_bar_x + 2*(g_x/8);
         }
-        i++;
+        element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
+        // sub_bar_x
+        i = i + 1;
         // sub_pos_offset_x
         //sub_pos_offset_x = sub_pos_offset_x + 200;
     });
