@@ -170,20 +170,24 @@ function novColumn(){
       	// draw the base (/!\ draw must only be call once in init /!\)
 
       	// TODO : make draw
-
+        // make the HDMI an AUX coll go down
+          if (this.column_Name == "AUX In" || this.column_Name == "HDMI / DOWNMIX"){
+            sub_bar_y = sub_bar_y + 170;
+          }
+          if(this.column_Name == "AUX In"){
+            sub_bar_y = sub_bar_y + 150;
+          }
           // draw the column name
-          this.drawColumnName(graph, idx, sub_bar_x);
+          this.drawColumnName(graph, idx, sub_bar_x, sub_bar_y);
           // draw the background
           this.drawBack(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
 
           // draw all the ligns
-          if (this.column_Name == "AUX In"){
-            var y_lign = sub_bar_y + 150;
-          }else {
-            var y_lign = sub_bar_y;
-          }
+          var y_lign = sub_bar_y;
+
           var x_lign = sub_bar_x-115;
           var i = 1;
+          y_lign = y_lign + 29;
           this.list_lign.forEach(function(element){
             // draw the square
             element.init(graph, x_lign, y_lign, i);
@@ -191,7 +195,7 @@ function novColumn(){
             y_lign = y_lign + 29;
           });
       },
-      drawColumnName : function(graph, idx, sub_bar_x){
+      drawColumnName : function(graph, idx, sub_bar_x, sub_bar_y){
           // draw the column name
 
           // TODO : make drawColumnName
@@ -201,9 +205,9 @@ function novColumn(){
           // draw on the graph
           var labelCol = null;
           if(column_name == "AUX In") {
-              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), ((char_pos_x_y_column_name.labelSize_y/2)+column_name_AUXIn_pos_y_offset) + 20);
+              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
           }else if(column_name != "AUX In") {
-              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), (char_pos_x_y_column_name.labelSize_y/2));
+              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
           }
 
           if(labelCol != null) {
@@ -327,7 +331,6 @@ function novlign(){
       },
       draw : function(graph, x, y, i){
           // draw
-
           // box and number
           this.draw_labelBoxAndNumber(graph, x, y, i);
 
@@ -452,7 +455,7 @@ function init(graph){
 
     // draw all column
     // sub bar y and x
-    var sub_bar_y = d_y/9;
+    var sub_bar_y = 10;
     var sub_bar_x = g_x/8;
     // sub_pos_offset_y
     var sub_pos_offset_y = 500;
@@ -460,7 +463,7 @@ function init(graph){
     var i=0;
     list_column.forEach(function(element){
         //init and draw
-        if (element.column_Name !== "AUX In" && i !=0){
+        if (element.column_Name !== "AUX In" && i !=0 /* this made the Aux In collumn go under the HDMI one */){
           sub_bar_x = sub_bar_x + 2*(g_x/8);
         }
         element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
