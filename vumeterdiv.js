@@ -359,7 +359,7 @@ function novlign(){
         this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
         //draw level empty
         this.level = graph.rect();
-        this.dbNum = graph.text("").move(x + 22, y + 13).attr("font-size", "13");
+        this.dbNum = graph.text("").move(x + 100, y + 13).attr("font-size", "13");
         // remember the loc
         this.x = x;
         this.y = y;
@@ -388,7 +388,7 @@ function novlign(){
           }else if (this.prev_vumeter_stats !== db) {
             this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
             // the db number
-            this.dbNum.node.textContent = (db.toString());
+            this.dbNum.node.textContent = (precise_round(db, 1).toString());
           }
           // replace the prev_vumeter_stats with the new one
           this.prev_vumeter_stats = db;
@@ -638,4 +638,14 @@ function dbLevel(level) {
         }
     }
     return dbLevel;
+}
+
+function precise_round(num, dec){
+ // function that round a number
+  if ((typeof num !== 'number') || (typeof dec !== 'number'))
+return false;
+
+  var num_sign = num >= 0 ? 1 : -1;
+
+  return (Math.round((num*Math.pow(10,dec))+(num_sign*0.0001))/Math.pow(10,dec)).toFixed(dec);
 }
