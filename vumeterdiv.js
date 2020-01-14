@@ -89,25 +89,25 @@ function get_txt_sizes(graph, txt, column_name) {
 //   COLUMN
 function novColumn(){
   var column = {
-  	// Column Object
+  	// Column Object, is the object of the column, it contain also the list of ligns for this column
 
   	// var
-      column_Name         : "",
-      labelsBox_CH        : [null],
-      labelsTxt_CH        : [null],
-      labelsTxt_CH_TXT    : [null],
-      last_max_pos_x      : [null],
-      last_max_pos_y      : [null],
-      dc_x                : [null],
-      vol_background_area : [null],
-      vol_mask_area       : [null],
-      labelsTxt_VOL       : [null],
-      list_lign           : [],
-      nbr_lign            : 0,
+      column_Name         : "", // column_name is the name of the column, it's used to draw the column name and to verify what column it is
+      labelsBox_CH        : [null], // labelsBox_CH is a rect object (box)
+      labelsTxt_CH        : [null], // labelsTxt_CH is the number in the box
+      labelsTxt_CH_TXT    : [null], // labelsTxt_CH_TXT is never used TODO : remove
+      last_max_pos_x      : [null], // last_max_pos_x is used to draw the background
+      last_max_pos_y      : [null], // same
+      dc_x                : [null], // same
+      vol_background_area : [null], // vol_background_area is used to draw the gradient
+      vol_mask_area       : [null], // never used TODO : remove
+      labelsTxt_VOL       : [null], // never used TODO : remove
+      list_lign           : [], // list_lign is the list of ligns, logic
+      nbr_lign            : 0, // nbr_lign is the number of ligns that must dispaly
 
       // function
       clear_var : function() {
-      	// clear all var exept the column_Name
+      	// clear all var exept the column_Name and the list of ligns
         idx = 0;
       	this.labelsBox_CH        = [null];
   	    this.labelsTxt_CH        = [null];
@@ -122,44 +122,39 @@ function novColumn(){
       verif_change : function(vumeter_stats, graph) {
       	// verif if there is change and if yes draw
 
-      	// TODO : make verif_change func
-
-        // reset vars
         // foreach lign, verif
-        var i = 0;
+        var i = 0; // i is here to count the number of iteration
         this.list_lign.forEach(function(element){
           // forEach lign
-          if(i < vumeter_stats.length){
-            // and if there is an info
-            element.verif_change(vumeter_stats[i][0], graph);
-            i++;
+          if(i < vumeter_stats.length){ // the if is here to verify that there is enough info in vumeter_stats
+            element.verif_change(vumeter_stats[i][0], graph); // we call the verif_change func for each ligns with the info in vumeter_stats
+            i++; // increment i to count the iteration
           }
         });
-        // limiter warning
+        // limiter warning, the limiter is a seperate var in vumeter_stats and only apply on the outputs
         if (this.column_Name == "OUTPUTS 01 to 16" || this.column_Name == "OUTPUTS 17 to 32"){
-          var i = 0;
+          var i = 0; // same as up here, we count the number of iteration to make sure that we don't verify with empty info
           this.list_lign.forEach(function(element){
-            // forEach lign
+            // forEach ligns
             if(i < vumeter_stats.length){
               // and if there is an info
-              element.limiterCheck(vumeter_stats[i][2], graph);
-              i++;
+              element.limiterCheck(vumeter_stats[i][2], graph); // we use the limiterChecker function with the specific info of vumeter_stats
+              i++; // increment i
             }
           });
         }
-        this.clear_var();
+        this.clear_var(); // we clearVar to save ram but i'm not sure it's very useful
       },
       init : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// init the collum (/!\ init must only be call once when the vumeter appear /!\)
 
-      	// TODO : make init
-
-        // clear the vars
+        // clear the vars, just in case
         this.clear_var();
 
+        // forEach nbr ligns, create the lign object
         for (var i = 0; i < this.nbr_lign; i++) {
-          // create the lignes
-          this.list_lign.push(novlign());
+          // add a new lign in the list_lign lsit
+          this.list_lign.push(novlign()); // novlign is a func that return a lign object, it's the equivalent of list_lign.add(new lign)
         }
 
         // call draw func
@@ -168,53 +163,51 @@ function novColumn(){
       },
       draw : function(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
       	// draw the base (/!\ draw must only be call once in init /!\)
+        // the draw function is the function where everything is draw, or the other draw func is call
 
-      	// TODO : make draw
-        // make the HDMI an AUX coll go down
-          if (this.column_Name == "AUX In" || this.column_Name == "HDMI / DOWNMIX"){
-            sub_bar_y = sub_bar_y + 260;
+        // make the HDMI an AUX coll go down, it's to let the 7 other ligns of decoder be display
+        if (this.column_Name == "AUX In" || this.column_Name == "HDMI / DOWNMIX"){
+          // 260 is a litle at "vu de nez", maybe cool to count the number if lign of decoder and make down that much aux and hdmi
+          sub_bar_y = sub_bar_y + 260;
+        }
+        if(this.column_Name == "AUX In"){
+          // aux is on the same column as hdmi, so it must be dawn, same 150 is "vu de nez" so maybe cool to count the number of ligns in hdmi
+          sub_bar_y = sub_bar_y + 150;
+        }
+        // draw the column name
+        this.drawColumnName(graph, idx, sub_bar_x, sub_bar_y);
+        // draw the background
+        this.drawBack(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
+
+        // draw all the ligns
+        // set up var for the ligns
+        var y_lign = sub_bar_y;
+        var x_lign = sub_bar_x-115;
+        var i = 1;
+        // Why not just add 29 in the set up of y_lign?
+        y_lign = y_lign + 29;
+        // the forEach that create the ligns
+        this.list_lign.forEach(function(element){
+          // draw the square
+          if(i == 17){
+            // if more than 16 go on the other collum
+            y_lign = sub_bar_y + 27;
+            x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
           }
-          if(this.column_Name == "AUX In"){
-            sub_bar_y = sub_bar_y + 150;
-          }
-          // draw the column name
-          this.drawColumnName(graph, idx, sub_bar_x, sub_bar_y);
-          // draw the background
-          this.drawBack(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
-
-          // draw all the ligns
-          var y_lign = sub_bar_y;
-
-          var x_lign = sub_bar_x-115;
-          var i = 1;
-          y_lign = y_lign + 29;
-          this.list_lign.forEach(function(element){
-            // draw the square
-            if(i == 17){
-              // if more than 16 go on the other collum
-              y_lign = sub_bar_y + 27;
-              x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
-            }
-            element.init(graph, x_lign, y_lign, i);
-            i = i + 1;
-            y_lign = y_lign + 29;
-          });
+          element.init(graph, x_lign, y_lign, i); // init the ligns
+          i = i + 1; // increment i to verify if it doesn't go more that 16
+          y_lign = y_lign + 29; // make the next lign go down, 29 is how much space there is between ligns
+        });
       },
       drawColumnName : function(graph, idx, sub_bar_x, sub_bar_y){
           // draw the column name
 
-          // TODO : make drawColumnName
-
           // get the name
-          var column_name = this.column_Name;
+          var column_name = this.column_Name; // i don't think it's very nessessery but whatever
           // draw on the graph
-          var labelCol = null;
-          if(column_name == "AUX In") {
-              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
-          }else if(column_name != "AUX In") {
-              var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
-          }
+          var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
 
+          // it was i nthe original code, i don't know if it's still relevent but i let it to avoid error
           if(labelCol != null) {
               labelCol.addClass('vumeter-Column_Name');
           }else {
@@ -224,6 +217,7 @@ function novColumn(){
       },
       drawBack : function(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
           // draw the background and line
+          // all of this come from the original code and it's work so i don't touch it
 
           // var
           var idxArray = idx-1;
@@ -270,14 +264,12 @@ function novColumn(){
       },
       update : function(vumeter_stats, graph){
       	// update the column
-
-      	// TODO : make update
-
-          // verif chang
-          this.verif_change(vumeter_stats, graph);
+        // just call verif_change
+        this.verif_change(vumeter_stats, graph);
       }
   }
 
+  // this just return the column object
   return column;
 }
 
@@ -285,133 +277,139 @@ function novColumn(){
 //         LIGN
 function novlign(){
   var lign = {
-      // lign object
+    // lign object
 
-      // var
-      CH_CONTENT_MAP : ['OFF', 'LF', 'RF', 'CF', 'LS', 'RS', 'LB', 'RB', 'CB',
-          'LFH', 'RFH', 'CFH', 'LSH', 'RSH', 'LBH', 'RBH',
-          'LFT', 'RFT', 'LMT', 'RMT', 'LBT', 'RBT', 'TOP',
-          'SUB', 'LW', 'RW', 'HI', 'VI', 'MS', 'LRS1', 'RRS1', 'CBH',
-          'AUX_LF', 'AUX_RF', 'DML', 'DMR', 'Mono','DM_LT','DM_RT',
-          'Left','Right','AUX_M', 'AUX_BI_L', 'AUX_BI_R', 'LSC','RSC','LS1','RS1'
-      ],
-      // the green box
-      labelsBox_CH : [null],
+    // var
+    CH_CONTENT_MAP : ['OFF', 'LF', 'RF', 'CF', 'LS', 'RS', 'LB', 'RB', 'CB',
+        'LFH', 'RFH', 'CFH', 'LSH', 'RSH', 'LBH', 'RBH',
+        'LFT', 'RFT', 'LMT', 'RMT', 'LBT', 'RBT', 'TOP',
+        'SUB', 'LW', 'RW', 'HI', 'VI', 'MS', 'LRS1', 'RRS1', 'CBH',
+        'AUX_LF', 'AUX_RF', 'DML', 'DMR', 'Mono','DM_LT','DM_RT',
+        'Left','Right','AUX_M', 'AUX_BI_L', 'AUX_BI_R', 'LSC','RSC','LS1','RS1'
+    ], // CH_CONTENT_MAP is the list of name of lign
+    // the green box
+    labelsBox_CH : [null],
+    // the number
+    number : [null],
+    // the level
+    level : [null],
+    // level box background
+    levelBox : [null],
+    levelBoxBoudry : [null],
+    // prev state
+    prev_vumeter_stats : [null],
+    // the position of the lign
+    x : [null],
+    y : [null],
+    // the text that display the level in db
+    dbNum : [null],
+
+    // function
+    init : function(graph, x_lign, y_lign, i){
+      // init the lign
+      this.clearVar(); // clear the var to avoid error
+      this.draw(graph, x_lign, y_lign, i); // draw the static stuff
+    },
+    clearVar : function(){
+      // clear the var like the name say
+
+      this.labelsBox_CH = [null];
       // the number
-      number : [null],
+      this.number = [null];
       // the level
-      level : [null],
+      this.level = [null];
+      this.levelex = [null];
       // level box background
-      levelBox : [null],
-      levelBoxBoudry : [null],
+      this.levelBox = [null];
+      this.levelBoxBoudry = [null];
       // prev state
-      prev_vumeter_stats : [null],
-      x : [null],
-      y : [null],
-      dbNum : [null],
+      this.prev_vumeter_stats = [null];
+      this.x = [null];
+      this.y = [null];
+    },
+    draw : function(graph, x, y, i){
+        // draw static stuff
 
-
-      // function
-      init : function(graph, x_lign, y_lign, i){
-          // init
-          console.log("je clear les var");
-          this.clearVar();
-          this.draw(graph, x_lign, y_lign, i);
-      },
-      clearVar : function(){
-        this.labelsBox_CH = [null];
-        // the number
-        this.number = [null];
-        // the level
-        this.level = [null];
-        this.levelex = [null];
+        // box and number
+        this.draw_labelBoxAndNumber(graph, x, y, i);
         // level box background
-        this.levelBox = [null];
-        this.levelBoxBoudry = [null];
-        // prev state
-        this.prev_vumeter_stats = [null];
-        this.x = [null];
-        this.y = [null];
+        this.draw_levelBox(graph, x, y);
 
-      },
-      draw : function(graph, x, y, i){
-          // draw
-          // box and number
-          this.draw_labelBoxAndNumber(graph, x, y, i);
+        var idxArray = idx-1; // je sais pas ce que c'est mais j'ai peur de le suprimer, TODO : what is this?
+    },
+    draw_labelBoxAndNumber : function(graph, x, y, i){
+      // draw the level box and number
 
-          // level box background
-          this.draw_levelBox(graph, x, y);
+      // chan square size
+      var size = 17;
+      // draw the box
+      this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#0faa33'});
+      // draw the number
+      this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
+    },
+    draw_levelBox : function(graph, x, y){
+      // draw a level box
 
-          var idxArray = idx-1; // je sais pas ce que c'est mais j'ai peur de le suprimer
-      },
-      draw_labelBoxAndNumber : function(graph, x, y, i){
-        // draw the level box and number
+      // you can change the size here, the boudry and interior adapt automaticaly
+      size_x = 200;
+      size_y = 17;
+      // draw the boundry
+      this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#fcf9f9"});
+      // draw the inside of the level box
+      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
+      //draw level empty
+      this.level = graph.rect();
+      this.dbNum = graph.text("").move(x + 100, y + 13).attr("font-size", "13");
+      // remember the loc
+      this.x = x;
+      this.y = y;
+    },
+    drawlevel : function(graph){
+      // draw the level
+      // why is this empty?
+    },
+    update : function(vumeter_stats, graph){
+        // update by calling verif_change
+        this.verif_change(vumeter_stats, graph); // verif if there is change and redraw if there is
+    },
+    verif_change : function(stats, graph){
+      // verif if there is change and redraw if there is
 
-        // chan square
-        var size = 17;
-
-        this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#0faa33'});
-
-        // draw number
-        this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
-      },
-      draw_levelBox : function(graph, x, y){
-        // draw a level box
-
-        // you can change the size here, the boudry and interior adapt automaticaly
-        size_x = 200;
-        size_y = 17;
-        // draw the boundry
-        this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#fcf9f9"});
-        // draw the inside of the level box
-        this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
-        //draw level empty
-        this.level = graph.rect();
-        this.dbNum = graph.text("").move(x + 100, y + 13).attr("font-size", "13");
-        // remember the loc
-        this.x = x;
-        this.y = y;
-      },
-      drawlevel : function(graph){
-        // draw the level
-      },
-      update : function(vumeter_stats, graph){
-          // update
-          this.verif_change(vumeter_stats, graph);
-      },
-      verif_change : function(stats, graph){
-          db = dbLevel(stats);
-          barLevel = this.dbBar(db);
-          size_y = 17;
-          // verif change
-          if(this.prev_vumeter_stats == null){
-            // first time so there is no prev
-            //console.log("he you stop right there !");
-            //this.level = graph.rect(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            // the db number
-            //console.log("coucou");
-            //this.dbNum = graph.text((db).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
-          }else if (this.prev_vumeter_stats == db) {
-            // do nothing because nothing change, var... var never change
-          }else if (this.prev_vumeter_stats !== db) {
-            this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
-            // the db number
-            this.dbNum.node.textContent = (precise_round(db, 1).toString());
-          }
-          // replace the prev_vumeter_stats with the new one
-          this.prev_vumeter_stats = db;
-      },
-      dbBar : function(db){
-        return ((100 + db)*197/100);
-      },
-      limiterCheck : function(stats, graph){
-        if(stats != 0){
-          this.labelsBox_CH.attr({fill: "#f70202"});
-        }else {
-          this.labelsBox_CH.attr({fill: "#0faa33"});
-        }
+      // set up the db
+      db = dbLevel(stats);
+      // barLevel change in function of the db and the size of each lign, i think
+      barLevel = this.dbBar(db);
+      // arbitrary size y
+      size_y = 17;
+      // verif change
+      if(this.prev_vumeter_stats == null){
+        // prev_vumeter_stats is normally never null, but it's to avoid error, we never know
+      }else if (this.prev_vumeter_stats == db) {
+        // do nothing because nothing change, var... var never change
+      }else if (this.prev_vumeter_stats !== db) {
+        // if different, redraw stuff
+        // this is the bar level
+        this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+        // this is the db number
+        this.dbNum.node.textContent = (precise_round(db, 1).toString());
       }
+      // replace the prev_vumeter_stats with the new one
+      this.prev_vumeter_stats = db;
+    },
+    dbBar : function(db){
+      // make the bar length in function of the db
+      return ((100 + db)*197/100);
+    },
+    limiterCheck : function(stats, graph){
+      // limiter check, if it's not 0 (this mean that db > 0) make the square red
+      if(stats != 0){
+        this.labelsBox_CH.attr({fill: "#f70202"});
+      }else { // don't forget to remake it green, else it will be red forever
+        this.labelsBox_CH.attr({fill: "#0faa33"});
+      }
+    }
   }
+  // return the lign object
   return lign;
 }
 
@@ -420,6 +418,9 @@ function init(graph){
 	// init the vumeter
 
 	// var
+
+  // here are the columns :
+  // create the column object
 	list_column = [
 		// declare all columns
 		decoder      = novColumn(),
@@ -428,55 +429,51 @@ function init(graph){
 		HDMI_DOWNMIX = novColumn(),
     AUX_In       = novColumn()
 	]
-
-	// set up the column
+	// set up the column name
 	list_column[0].column_Name = "DECODER";
 	list_column[3].column_Name = "OUTPUTS 01 to 16";
 	list_column[4].column_Name = "OUTPUTS 17 to 32";
 	list_column[1].column_Name = "HDMI / DOWNMIX";
   list_column[2].column_Name = "AUX In";
-
-  // nrb ligns for each column
+  // number of ligns for each column
   list_column[0].nbr_lign = 24;
   list_column[3].nbr_lign = 16;
   list_column[4].nbr_lign = 16;
   list_column[1].nbr_lign = 4;
   list_column[2].nbr_lign = 2;
 
-
 	/* total graph area */
-    var g_x     = graph.width();
-    var g_y     = graph.height();
+  var g_x     = graph.width();
+  var g_y     = graph.height();
 
-    // draw black background
-    var d_x     = g_x - dleft - dright;
-    var d_y     = g_y - dtop - dbottom;
-    background     = graph.rect(g_x, g_y);
+  // draw black background
+  var d_x     = g_x - dleft - dright;
+  var d_y     = g_y - dtop - dbottom;
+  background     = graph.rect(g_x, g_y);
 
-    // draw middle lines
-    graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move(g_x/2, 0);
-    graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move((g_x/4)+2, 0);
-    graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move((g_x/4+g_x/2)-2, 0);
+  // draw middle lines
+  graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move(g_x/2, 0);
+  graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move((g_x/4)+2, 0);
+  graph.rect(1, g_y).stroke({ color: 'white', opacity: 1, width: 1 }).move((g_x/4+g_x/2)-2, 0);
 
-    // draw all column
-    // sub bar y and x
-    var sub_bar_y = 10;
-    var sub_bar_x = g_x/8;
-    // sub_pos_offset_y
-    var sub_pos_offset_y = 500;
-    var sub_pos_offset_x = 50;
-    var i=0;
-    list_column.forEach(function(element){
-        //init and draw
-        if (element.column_Name !== "AUX In" && i !=0 /* this made the Aux In collumn go under the HDMI one */){
-          sub_bar_x = sub_bar_x + 2*(g_x/8);
-        }
-        element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y);
-        // sub_bar_x
-        i = i + 1;
-        // sub_pos_offset_x
-        //sub_pos_offset_x = sub_pos_offset_x + 200;
-    });
+  // draw all column
+  // sub bar y and x
+  var sub_bar_y = 10;
+  var sub_bar_x = g_x/8;
+  // sub_pos_offset_y
+  var sub_pos_offset_y = 500;
+  var sub_pos_offset_x = 50;
+
+  // this draw the column
+  var i=0; // i is to count the number of iteration
+  list_column.forEach(function(element){
+      //init and draw
+      if (element.column_Name !== "AUX In" && i !=0 /* this made the Aux In collumn go under the HDMI one */){
+        sub_bar_x = sub_bar_x + 2*(g_x/8);
+      }
+      element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y); // init stuff
+      i = i + 1; // increment i
+  });
 }
 
 function wsOpen() {
@@ -541,29 +538,6 @@ function vumeterShow() {
         //Default size 1013x226
         vumeterdiv.graph = vumeter_graph.size(1024,512);
     }
-
-    // Get Zone2Source is enable
-    /* inputs_aux
-    setInterval(function() {
-        if($("#vumeterdiv").is(":visible")) {
-            $.ajax({
-                type: "POST",
-                url: "scripts/ajaxMYSQL.php",
-                dataType: "json",
-                data: {
-                    submit: 'getState',
-                    key: 'Zone2Source'
-                },
-                success: function(datas) {
-                    if(datas == 0) {
-                        inputs_aux.AUXIn_isEnable = false;
-                    }else {
-                        inputs_aux.AUXIn_isEnable = true;
-                    }
-                }
-            });
-        }
-    }, 1000);*/
 
     // create graphs
     var graph = vumeterdiv.graph;
@@ -649,11 +623,10 @@ function dbLevel(level) {
 }
 
 function precise_round(num, dec){
- // function that round a number
-  if ((typeof num !== 'number') || (typeof dec !== 'number'))
-return false;
-
+  // function that round a number, it's just a copy paste from stack
+  if ((typeof num !== 'number') || (typeof dec !== 'number')){
+    return false;
+  }
   var num_sign = num >= 0 ? 1 : -1;
-
   return (Math.round((num*Math.pow(10,dec))+(num_sign*0.0001))/Math.pow(10,dec)).toFixed(dec);
 }
