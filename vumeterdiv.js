@@ -1,6 +1,13 @@
 // NEW VUMETER CODE  // WARNING: in developement
 
 // var
+var incrementLign = 29; // incrementation between each ligns
+var nbr_lign_per_col = 16; // number of lign max per columns
+// you can change the size here, the boudry and interior adapt automaticaly
+var size_x = 150;
+var size_y = 17;
+var margBar = 4*size_y - 10;
+
 var background  = null;
 var dtop        = 25;
 var dbottom     = 5;
@@ -175,22 +182,20 @@ function novColumn(){
 
         // draw all the ligns
         // set up var for the ligns
-        var y_lign = sub_bar_y;
-        var x_lign = sub_bar_x-115;
+        var y_lign = sub_bar_y + incrementLign;
+        var x_lign = sub_bar_x - 115; // the 115 is here to slide the interrior or the col to the left
         var i      = 1;
-        // Why not just add 29 in the set up of y_lign?
-        y_lign     = y_lign + 29;
         // the forEach that create the ligns
         this.list_lign.forEach(function(element){
           // draw the square
-          if(i == 17){
+          if(i == (nbr_lign_per_col + 1)){
             // if more than 16 go on the other collum
             y_lign = sub_bar_y + 27;
             x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
           }
           element.init(graph, x_lign, y_lign, i); // init the ligns
           i      = i + 1; // increment i to verify if it doesn't go more that 16
-          y_lign = y_lign + 29; // make the next lign go down, 29 is how much space there is between ligns
+          y_lign = y_lign + incrementLign; // go down for each ligns
         });
       },
       drawColumnName : function(graph, idx, sub_bar_x, sub_bar_y){
@@ -215,29 +220,9 @@ function novColumn(){
 
           // var
           var idxArray = idx-1;
-
-          //calcul spec for each chan TODO : Why are they separate?
-          if        ( this.column_Name == "DECODER" ) {
-              dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
-              tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]          = dc_x;
-          } else if ( this.column_Name == "LBL_OUT" ) {
-              dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
-              tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]          = dc_x;
-          } else if ( this.column_Name == "OUTPUTS 01 to 16" ) {
-              dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
-              tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]          = dc_x;
-          } else if ( this.column_Name == "OUTPUTS 17 to 32" ) {
-              dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
-              tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]   = dc_x;
-          } else if ( this.column_Name == "HDMI / DOWNMIX" ) {
-              dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
-              tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]          = dc_x;
-          }
+          dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
+          tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
+          this.dc_x[idxArray]          = dc_x;
           var dc_y = sub_bar_y - dctop -dcbottom;
 
           // draw gradient
@@ -347,27 +332,24 @@ function novlign(){
       // chan square size
       var size = 17;
       // draw the box
-      this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#142a89'});
+      this.labelsBox_CH = graph.rect(size, size).move(x, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw the number
       this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15").attr({fill: '#f7f7f7'});
     },
     draw_levelBox : function(graph, x, y){
       // draw a level box
 
-      // you can change the size here, the boudry and interior adapt automaticaly
-      size_x = 150;
-      size_y = 17;
       // draw the boundry
-      this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#fcf9f9"});
+      this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20 + margBar, y).attr({fill: "#fcf9f9"});
       // draw the inside of the level box
-      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#0e0f0e"});
+      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22 + margBar, y + 2).attr({fill: "#0e0f0e"});
       // draw a rect for the libel
-      this.lbBox = graph.rect(3*size_y, size_y).move(x + size_x + 25, y).attr({fill: '#142a89'});
+      this.lbBox = graph.rect(3*size_y, size_y).move(x + 20, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw empty label text
-      this.lbTxt = graph.text("").move(x + size_x + 25, y + size_y - 4).attr("font-size", "13").attr({fill: '#f7f7f7'});
+      this.lbTxt = graph.text("").move(x + 20, y + size_y - 4).attr("font-size", "13").attr({fill: '#f7f7f7'});
       //draw level empty
-      this.level = graph.rect();
-      this.dbNum = graph.text("").move(x + size_x/2, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
+      this.level = graph.rect().move(x + 20 + margBar + 2, y + 2);
+      this.dbNum = graph.text("").move(x + size_x/2 + margBar, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
       // remember the loc
       this.x = x;
       this.y = y;
@@ -402,16 +384,18 @@ function novlign(){
       }else if (this.prev_vumeter_stats !== db) {
         // if different, redraw stuff
         // this is the bar level
-        this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#2c6d1d"});
+        this.level.size(barLevel, size_y - 4).attr({fill: "#2c6d1d"});
         // this is the db number
         this.dbNum.node.textContent = (precise_round(db, 1).toString());
         this.lbTxt.node.textContent = ((this.CH_CONTENT_MAP[identifiant]).toString());
         if (identifiant == 0 /* if it's off */){
           // set the label box to red to indicate that it's off
-          this.lbBox.attr({fill: "#f70202"});
+          this.lbBox.removeClass('vumeter-labelsBox_LimiterOff_CH');
+          this.lbBox.addClass('vumeter-labelsContentTxtOff_CH');
         }else {
           // redraw at the original color
-          this.lbBox.attr({fill: "#142a89"});
+          this.lbBox.removeClass('vumeter-labelsContentTxtOff_CH');
+          this.lbBox.addClass('vumeter-labelsBox_LimiterOff_CH');
         }
       }
       // replace the prev_vumeter_stats with the new one
@@ -424,9 +408,11 @@ function novlign(){
     limiterCheck : function(stats, graph){
       // limiter check, if it's not 0 (this mean that db > 0) make the square red
       if(stats != 0){
-        this.labelsBox_CH.attr({fill: "#f70202"});
+        this.labelsBox_CH.removeClass('vumeter-labelsBox_LimiterOff_CH');
+        this.labelsBox_CH.addClass('vumeter-labelsContentTxtOff_CH');
       }else { // don't forget to remake it green, else it will be red forever
-        this.labelsBox_CH.attr({fill: "#142a89"});
+        this.labelsBox_CH.removeClass('vumeter-labelsContentTxtOff_CH');
+        this.labelsBox_CH.addClass('vumeter-labelsBox_LimiterOff_CH');
       }
     }
   }
