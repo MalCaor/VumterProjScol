@@ -297,6 +297,12 @@ function novlign(){
     y                  : [null],
     // the text that display the level in db
     dbNum              : [null],
+    // the size of the lign bar
+    size_x             : [null],
+    size_y             : [null],
+    // the libel box and txt
+    lbBox              : [null],
+    lbTxt              : [null],
 
     // function
     init : function(graph, x_lign, y_lign, i){
@@ -320,6 +326,10 @@ function novlign(){
       this.prev_vumeter_stats = [null];
       this.x                  = [null];
       this.y                  = [null];
+      this.size_x             = [null];
+      this.size_y             = [null];
+      this.lbBox              = [null];
+      this.lbTxt              = [null];
     },
     draw : function(graph, x, y, i){
         // draw static stuff
@@ -337,26 +347,33 @@ function novlign(){
       // chan square size
       var size = 17;
       // draw the box
-      this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#0faa33'});
+      this.labelsBox_CH = graph.rect(size, size).move(x, y).attr({fill: '#142a89'});
       // draw the number
-      this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15");
+      this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15").attr({fill: '#f7f7f7'});
     },
     draw_levelBox : function(graph, x, y){
       // draw a level box
 
       // you can change the size here, the boudry and interior adapt automaticaly
-      size_x = 200;
+      size_x = 150;
       size_y = 17;
       // draw the boundry
       this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20, y).attr({fill: "#fcf9f9"});
       // draw the inside of the level box
-      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#484f4a"});
+      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22, y + 2).attr({fill: "#0e0f0e"});
+      // draw a rect for the libel
+      this.lbBox = graph.rect(3*size_y, size_y).move(x + size_x + 25, y).attr({fill: '#142a89'});
+      // draw empty label text
+      this.lbTxt = graph.text("").move(x + size_x + 25, y + size_y - 4).attr("font-size", "13").attr({fill: '#f7f7f7'});
       //draw level empty
       this.level = graph.rect();
-      this.dbNum = graph.text("").move(x + 100, y + 13).attr("font-size", "13");
+      this.dbNum = graph.text("").move(x + size_x/2, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
       // remember the loc
       this.x = x;
       this.y = y;
+      // remember the size of the Ligns
+      this.size_x = size_x;
+      this.size_y = size_y;
     },
     drawlevel : function(graph){
       // draw the level
@@ -385,23 +402,31 @@ function novlign(){
       }else if (this.prev_vumeter_stats !== db) {
         // if different, redraw stuff
         // this is the bar level
-        this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
+        this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#2c6d1d"});
         // this is the db number
-        this.dbNum.node.textContent = (this.CH_CONTENT_MAP[identifiant].toString().concat(precise_round(db, 1).toString()));
+        this.dbNum.node.textContent = (precise_round(db, 1).toString());
+        this.lbTxt.node.textContent = ((this.CH_CONTENT_MAP[identifiant]).toString());
+        if (identifiant == 0 /* if it's off */){
+          // set the label box to red to indicate that it's off
+          this.lbBox.attr({fill: "#f70202"});
+        }else {
+          // redraw at the original color
+          this.lbBox.attr({fill: "#142a89"});
+        }
       }
       // replace the prev_vumeter_stats with the new one
       this.prev_vumeter_stats = db;
     },
     dbBar : function(db){
       // make the bar length in function of the db
-      return ((100 + db)*197/100);
+      return ((100 + db)*(this.size_x-4)/100); // the (100 - db) is to make it positiv, the (this.size_x-4)/100 is to rescale it to the bar level (no work to do)
     },
     limiterCheck : function(stats, graph){
       // limiter check, if it's not 0 (this mean that db > 0) make the square red
       if(stats != 0){
         this.labelsBox_CH.attr({fill: "#f70202"});
       }else { // don't forget to remake it green, else it will be red forever
-        this.labelsBox_CH.attr({fill: "#0faa33"});
+        this.labelsBox_CH.attr({fill: "#142a89"});
       }
     }
   }
