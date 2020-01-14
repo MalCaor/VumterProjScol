@@ -1,12 +1,12 @@
 // NEW VUMETER CODE  // WARNING: in developement
 
 // var
-var background = null;
+var background  = null;
 var dtop        = 25;
 var dbottom     = 5;
 var dleft       = 5;
 var dright      = 5;
-list_column = null;
+list_column     = null;
 /* band drawing from channel area */
 var dctop       = 5;
 var dcbottom    = 5;
@@ -26,13 +26,13 @@ var tmp_last_max_pos_y     = 0;
 var column_name_AUXIn_pos_y_offset = 150;
 
 // background
-var background = null;
+var background                = null;
 var background_vertical_lines = null;
 
 /* Speakers table */
-var LBL_OLD = "old";
-var LBL_NEW = "new";
-var speakersLimiters = [];
+var LBL_OLD               = "old";
+var LBL_NEW               = "new";
+var speakersLimiters      = [];
 speakersLimiters[LBL_OLD] = 0;
 speakersLimiters[LBL_NEW] = 0;
 
@@ -43,13 +43,13 @@ var idx = 0;
 var list_column = [];
 
 /* const labels */
-var LBL_IN = "in";
-var LBL_OUT = "out";
-var LBL_AUX = "aux";
+var LBL_IN    = "in";
+var LBL_OUT   = "out";
+var LBL_AUX   = "aux";
 var LBL_AUXIN = "aux_in";
 
 
-// usful fonction
+// useful fonction
 //WARNING: String.prototype.padStart(x, y) is not working on Internet Explorer and Edge
 function padStart(pad, str, padLeft) {
     if (typeof str === 'undefined') {
@@ -183,9 +183,9 @@ function novColumn(){
         // set up var for the ligns
         var y_lign = sub_bar_y;
         var x_lign = sub_bar_x-115;
-        var i = 1;
+        var i      = 1;
         // Why not just add 29 in the set up of y_lign?
-        y_lign = y_lign + 29;
+        y_lign     = y_lign + 29;
         // the forEach that create the ligns
         this.list_lign.forEach(function(element){
           // draw the square
@@ -195,7 +195,7 @@ function novColumn(){
             x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
           }
           element.init(graph, x_lign, y_lign, i); // init the ligns
-          i = i + 1; // increment i to verify if it doesn't go more that 16
+          i      = i + 1; // increment i to verify if it doesn't go more that 16
           y_lign = y_lign + 29; // make the next lign go down, 29 is how much space there is between ligns
         });
       },
@@ -205,7 +205,7 @@ function novColumn(){
           // get the name
           var column_name = this.column_Name; // i don't think it's very nessessery but whatever
           // draw on the graph
-          var labelCol = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
+          var labelCol    = graph.text((column_name).toString()).move((sub_bar_x), sub_bar_y);
 
           // it was i nthe original code, i don't know if it's still relevent but i let it to avoid error
           if(labelCol != null) {
@@ -222,19 +222,19 @@ function novColumn(){
           // var
           var idxArray = idx-1;
 
-          //calcul spec for each chan
+          //calcul spec for each chan TODO : Why are they separate?
           if        ( this.column_Name == "DECODER" ) {
               dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
               tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]       = dc_x;
+              this.dc_x[idxArray]          = dc_x;
           } else if ( this.column_Name == "LBL_OUT" ) {
               dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
               tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray] = dc_x;
+              this.dc_x[idxArray]          = dc_x;
           } else if ( this.column_Name == "OUTPUTS 01 to 16" ) {
               dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
               tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray] = dc_x;
+              this.dc_x[idxArray]          = dc_x;
           } else if ( this.column_Name == "OUTPUTS 17 to 32" ) {
               dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
               tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
@@ -242,7 +242,7 @@ function novColumn(){
           } else if ( this.column_Name == "HDMI / DOWNMIX" ) {
               dc_x                         = sub_bar_x - this.last_max_pos_x[idxArray] - dcleft - dcright - 2;
               tmp_last_max_pos_x           = this.last_max_pos_x[idxArray]
-              this.dc_x[idxArray]    = dc_x;
+              this.dc_x[idxArray]          = dc_x;
           }
           var dc_y = sub_bar_y - dctop -dcbottom;
 
@@ -250,15 +250,15 @@ function novColumn(){
           var vol_background_area = graph.rect(dc_x, dc_y).fill(background_grad).move(sub_pos_offset_x+dcleft+tmp_last_max_pos_x, sub_pos_offset_y+dctop);
           vol_background_area.addClass('vumeter-vol_background_area');
           if        ( this.column_Name == "DECODER" ) {
-              this.vol_background_area[idxArray]       = vol_background_area;
+              this.vol_background_area[idxArray]   = vol_background_area;
           } else if ( this.column_Name == "LBL_OUT" ) {
-              this.vol_background_area[idxArray] = vol_background_area;
+              this.vol_background_area[idxArray]   = vol_background_area;
           } else if ( this.column_Name == "OUTPUTS 01 to 16" ) {
-              this.vol_background_area[idxArray] = vol_background_area;
+              this.vol_background_area[idxArray]   = vol_background_area;
           } else if ( this.column_Name == "OUTPUTS 17 to 32" ) {
               this.vol_background_area[idxArray]   = vol_background_area;
-          } else if (this.column_Name == "HDMI / DOWNMIX" ) {
-              this.vol_background_area[idxArray]    = vol_background_area;
+          } else if (this.column_Name  == "HDMI / DOWNMIX" ) {
+              this.vol_background_area[idxArray]   = vol_background_area;
           }
 
       },
@@ -288,21 +288,21 @@ function novlign(){
         'Left','Right','AUX_M', 'AUX_BI_L', 'AUX_BI_R', 'LSC','RSC','LS1','RS1'
     ], // CH_CONTENT_MAP is the list of name of lign
     // the green box
-    labelsBox_CH : [null],
+    labelsBox_CH       : [null],
     // the number
-    number : [null],
+    number             : [null],
     // the level
-    level : [null],
+    level              : [null],
     // level box background
-    levelBox : [null],
-    levelBoxBoudry : [null],
+    levelBox           : [null],
+    levelBoxBoudry     : [null],
     // prev state
     prev_vumeter_stats : [null],
     // the position of the lign
-    x : [null],
-    y : [null],
+    x                  : [null],
+    y                  : [null],
     // the text that display the level in db
-    dbNum : [null],
+    dbNum              : [null],
 
     // function
     init : function(graph, x_lign, y_lign, i){
@@ -313,19 +313,19 @@ function novlign(){
     clearVar : function(){
       // clear the var like the name say
 
-      this.labelsBox_CH = [null];
+      this.labelsBox_CH       = [null];
       // the number
-      this.number = [null];
+      this.number             = [null];
       // the level
-      this.level = [null];
-      this.levelex = [null];
+      this.level              = [null];
+      this.levelex            = [null];
       // level box background
-      this.levelBox = [null];
-      this.levelBoxBoudry = [null];
+      this.levelBox           = [null];
+      this.levelBoxBoudry     = [null];
       // prev state
       this.prev_vumeter_stats = [null];
-      this.x = [null];
-      this.y = [null];
+      this.x                  = [null];
+      this.y                  = [null];
     },
     draw : function(graph, x, y, i){
         // draw static stuff
@@ -447,8 +447,8 @@ function init(graph){
   var g_y     = graph.height();
 
   // draw black background
-  var d_x     = g_x - dleft - dright;
-  var d_y     = g_y - dtop - dbottom;
+  var d_x        = g_x - dleft - dright;
+  var d_y        = g_y - dtop - dbottom;
   background     = graph.rect(g_x, g_y);
 
   // draw middle lines
@@ -482,10 +482,10 @@ function wsOpen() {
     if(window.location.protocol === 'https:') {
         prefix = 'wss://';
     }
-    var url = prefix + window.location.host +'/ws/vumeter';
+    var url              = prefix + window.location.host +'/ws/vumeter';
     vumeterdiv.websocket = new WebSocket(url);
-    var websocket = vumeterdiv.websocket;
-    var graph = vumeterdiv.graph;
+    var websocket        = vumeterdiv.websocket;
+    var graph            = vumeterdiv.graph;
 
     websocket.onopen = function () {
         // close and re-open websocket after 2 min
@@ -530,7 +530,6 @@ function wsReopen() {
 }
 
 function vumeterShow() {
-
     $("#vumeterdiv").show();
     // instancy SVG graph
     if (!(vumeterdiv.hasOwnProperty('graph'))) {
@@ -546,10 +545,10 @@ function vumeterShow() {
     //WARNING: call only once this fonction because it's taking time and memory
     // draw background gradient
     background_grad = graph.gradient('linear', function(stop) {
-        stop.at({ offset: 0.0, color: 'red',     opacity: 1 })
+        stop.at({ offset: 0.0, color: 'red',    opacity: 1 })
         stop.at({ offset: 0.1, color: 'yellow', opacity: 1 })
-        stop.at({ offset: 0.2, color: 'green',     opacity: 1 })
-        stop.at({ offset: 1.0, color: 'green',     opacity: 1 })
+        stop.at({ offset: 0.2, color: 'green',  opacity: 1 })
+        stop.at({ offset: 1.0, color: 'green',  opacity: 1 })
     });
     background_grad.from(1,0).to(0,0);
 
@@ -614,7 +613,7 @@ function dbLevel(level) {
         dbLevel = -100.0;
     }else {
         var level = parseFloat(level);
-        dbLevel = 20 * (log10(level/65535));
+        dbLevel   = 20 * (log10(level/65535));
         if(dbLevel > -0.1) {
             dbLevel = 0.0;
         }
