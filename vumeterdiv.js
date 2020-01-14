@@ -95,13 +95,10 @@ function novColumn(){
       column_Name         : "", // column_name is the name of the column, it's used to draw the column name and to verify what column it is
       labelsBox_CH        : [null], // labelsBox_CH is a rect object (box)
       labelsTxt_CH        : [null], // labelsTxt_CH is the number in the box
-      labelsTxt_CH_TXT    : [null], // labelsTxt_CH_TXT is never used TODO : remove
       last_max_pos_x      : [null], // last_max_pos_x is used to draw the background
       last_max_pos_y      : [null], // same
       dc_x                : [null], // same
       vol_background_area : [null], // vol_background_area is used to draw the gradient
-      vol_mask_area       : [null], // never used TODO : remove
-      labelsTxt_VOL       : [null], // never used TODO : remove
       list_lign           : [], // list_lign is the list of ligns, logic
       nbr_lign            : 0, // nbr_lign is the number of ligns that must dispaly
 
@@ -111,13 +108,10 @@ function novColumn(){
         idx = 0;
       	this.labelsBox_CH        = [null];
   	    this.labelsTxt_CH        = [null];
-  	    this.labelsTxt_CH_TXT    = [null];
   	    this.last_max_pos_x      = [null];
   	    this.last_max_pos_y      = [null];
   	    this.dc_x                = [null];
   	    this.vol_background_area = [null];
-  	    this.vol_mask_area       = [null];
-  	    this.labelsTxt_VOL       = [null];
       },
       verif_change : function(vumeter_stats, graph) {
       	// verif if there is change and if yes draw
