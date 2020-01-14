@@ -121,7 +121,7 @@ function novColumn(){
         this.list_lign.forEach(function(element){
           // forEach lign
           if(i < vumeter_stats.length){ // the if is here to verify that there is enough info in vumeter_stats
-            element.verif_change(vumeter_stats[i][0], graph); // we call the verif_change func for each ligns with the info in vumeter_stats
+            element.verif_change(vumeter_stats[i][0], vumeter_stats[i][1], graph); // we call the verif_change func for each ligns with the info in vumeter_stats
             i++; // increment i to count the iteration
           }
         });
@@ -366,9 +366,11 @@ function novlign(){
         // update by calling verif_change
         this.verif_change(vumeter_stats, graph); // verif if there is change and redraw if there is
     },
-    verif_change : function(stats, graph){
+    verif_change : function(stats, id, graph){
       // verif if there is change and redraw if there is
 
+      // set the id
+      identifiant = id;
       // set up the db
       db = dbLevel(stats);
       // barLevel change in function of the db and the size of each lign, i think
@@ -385,7 +387,7 @@ function novlign(){
         // this is the bar level
         this.level.size(barLevel, size_y - 4).move(this.x + 22, this.y + 2).attr({fill: "#f70202"});
         // this is the db number
-        this.dbNum.node.textContent = (precise_round(db, 1).toString());
+        this.dbNum.node.textContent = (this.CH_CONTENT_MAP[identifiant].toString().concat(precise_round(db, 1).toString()));
       }
       // replace the prev_vumeter_stats with the new one
       this.prev_vumeter_stats = db;
