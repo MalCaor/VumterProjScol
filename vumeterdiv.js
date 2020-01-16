@@ -362,12 +362,12 @@ function novlign(){
       // draw the inside of the level box
       this.levelBox = graph.rect(this.size_x - (this.border), this.size_y - (this.border)).move(this.levelBoxBoudryX + this.size_numero + (this.border/2), this.y + (this.border/2)).fill(background_grad);
       // draw a rect for the libel
-      this.lbBox = graph.rect(3*size_y, size_y).move(x + this.size_numero, y).addClass('vumeter-labelsBox_LimiterOff_CH');
+      this.lbBox = graph.rect((3*this.size_y), this.size_y).move(x + this.size_numero, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw empty label text
-      this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").attr({fill: '#f7f7f7'});
-      //draw level empty
-      this.level = graph.rect().move(x + this.size_numero + margBar + (this.border / 2) + size_x - this.border, y + (this.border / 2)).attr({fill: '#262626'});
-      this.dbNum = graph.text("").move(x + size_x/2 + margBar, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
+      this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');
+      //draw level empty (its not a level but a reverse level, the background is the level and we draw a rect that hide the deff between the lign size and the actual level)
+      this.level = graph.rect().attr({fill: '#262626'}); // the color back, actually grey
+      this.dbNum = graph.text("").move(this.x + this.size_x/2 + margBar, this.y + 13).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');/*vumeter-labelsBoxTxt_CH*/
     },
     drawlevel : function(graph){
       // draw the level
@@ -397,7 +397,7 @@ function novlign(){
         // if different, redraw stuff
         // this is the bar level
         this.level.size((this.size_x - barLevel - (this.border)), size_y - (this.border));
-        this.level.move((this.x + this.size_numero + margBar + (this.border/2) + this.size_x) - (this.size_x - barLevel), this.y + 2)
+        this.level.move((this.x + this.size_numero + margBar + (this.border/2) + this.size_x) - (this.size_x - barLevel), this.y + (this.border/2));
         // this is the db number
         this.dbNum.node.textContent = (precise_round(db, 1).toString());
         this.lbTxt.node.textContent = ((this.CH_CONTENT_MAP[identifiant]).toString());
