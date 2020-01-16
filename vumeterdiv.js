@@ -289,6 +289,9 @@ function novlign(){
     lbBox              : [null],
     lbTxt              : [null],
     background_grad    : [null],
+    levelBoxBoudryX    : [null],
+    border             : [null],
+    size_numero        : [null],
 
     // function
     init : function(graph, x_lign, y_lign, i){
@@ -340,23 +343,31 @@ function novlign(){
     draw_levelBox : function(graph, x, y){
       // draw a level box
 
-      // draw the boundry
-      this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20 + margBar, y).attr({fill: "#fcf9f9"});
-      // draw the inside of the level box
-      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22 + margBar, y + 2).fill(background_grad);
-      // draw a rect for the libel
-      this.lbBox = graph.rect(3*size_y, size_y).move(x + 20, y).addClass('vumeter-labelsBox_LimiterOff_CH');
-      // draw empty label text
-      this.lbTxt = graph.text("").move(x + 20, y + size_y - 4).attr("font-size", "13").attr({fill: '#f7f7f7'});
-      //draw level empty
-      this.level = graph.rect().move(x + 20 + margBar + 2 + size_x - 4, y + 2).attr({fill: '#262626'});
-      this.dbNum = graph.text("").move(x + size_x/2 + margBar, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
+      // set up the vars
       // remember the loc
       this.x = x;
       this.y = y;
       // remember the size of the Ligns
       this.size_x = size_x;
       this.size_y = size_y;
+      // pos box boundry
+      this.levelBoxBoudryX = x /*+ 20*/ + margBar;
+      // border
+      this.border = 4;
+      // size of the num (not the actual size of the num but including the marge)
+      this.size_numero = 20;
+
+      // draw the boundry
+      this.levelBoxBoudry = graph.rect(this.size_x, this.size_y).move(this.levelBoxBoudryX + this.size_numero, this.y).attr({fill: "#fcf9f9"});
+      // draw the inside of the level box
+      this.levelBox = graph.rect(this.size_x - (this.border), this.size_y - (this.border)).move(this.levelBoxBoudryX + this.size_numero + (this.border/2), this.y + (this.border/2)).fill(background_grad);
+      // draw a rect for the libel
+      this.lbBox = graph.rect(3*size_y, size_y).move(x + this.size_numero, y).addClass('vumeter-labelsBox_LimiterOff_CH');
+      // draw empty label text
+      this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").attr({fill: '#f7f7f7'});
+      //draw level empty
+      this.level = graph.rect().move(x + this.size_numero + margBar + (this.border / 2) + size_x - this.border, y + (this.border / 2)).attr({fill: '#262626'});
+      this.dbNum = graph.text("").move(x + size_x/2 + margBar, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
     },
     drawlevel : function(graph){
       // draw the level
@@ -385,8 +396,8 @@ function novlign(){
       }else if (this.prev_vumeter_stats !== db) {
         // if different, redraw stuff
         // this is the bar level
-        this.level.size((this.size_x - barLevel - 4), size_y - 4);
-        this.level.move((this.x + 20 + margBar + 2 + this.size_x) - (this.size_x - barLevel), this.y + 2)
+        this.level.size((this.size_x - barLevel - (this.border)), size_y - (this.border));
+        this.level.move((this.x + this.size_numero + margBar + (this.border/2) + this.size_x) - (this.size_x - barLevel), this.y + 2)
         // this is the db number
         this.dbNum.node.textContent = (precise_round(db, 1).toString());
         this.lbTxt.node.textContent = ((this.CH_CONTENT_MAP[identifiant]).toString());
@@ -405,7 +416,7 @@ function novlign(){
     },
     dbBar : function(db){
       // make the bar length in function of the db
-      return ((100 + db)*(this.size_x-4)/100); // the (100 - db) is to make it positiv, the (this.size_x-4)/100 is to rescale it to the bar level (no work to do)
+      return ((100 + db)*(this.size_x-(this.border*2))/100); // the (100 - db) is to make it positiv, the (this.size_x-4)/100 is to rescale it to the bar level (no work to do)
     },
     limiterCheck : function(stats, graph){
       // limiter check, if it's not 0 (this mean that db > 0) make the square red
