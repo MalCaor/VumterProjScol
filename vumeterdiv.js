@@ -6,34 +6,22 @@ var nbr_lign_per_col = 16; // number of lign max per columns
 // you can change the size here, the boudry and interior adapt automaticaly
 var size_x = 150; // size of the barlevel
 var size_y = 18; // the Y size of ling
-var margBar = 4*size_y - 10;
+var margBar = 4*size_y - 10; // the marge of the level
 
-var background  = null;
-var dtop        = 25;
-var dbottom     = 5;
-var dleft       = 5;
-var dright      = 5;
-list_column     = null;
 /* band drawing from channel area */
 var dctop       = 5;
 var dcbottom    = 5;
 var dcleft      = 5;
 var dcright     = 20;
 var background_grad;
-/* size of char in pixel */
-var char_pos_x_y                 = 0;
-var char_pos_x_y_column_name     = 0;
 
 var dc_x                   = 0;
 var tmp_dc_x               = 0;
 var tmp_last_max_pos_x     = 0;
 var tmp_last_max_pos_y     = 0;
 
-/* size AUX In column name offet */
-var column_name_AUXIn_pos_y_offset = 150;
-
 // background
-var background                = null;
+var background  = null;
 var background_vertical_lines = null;
 
 /* Speakers table */
@@ -461,9 +449,6 @@ function init(graph){
   var g_x     = graph.width();
   var g_y     = graph.height();
 
-  // draw black background
-  var d_x        = g_x - dleft - dright;
-  var d_y        = g_y - dtop - dbottom;
   background     = graph.rect(g_x, g_y);
 
   // draw middle lines
@@ -566,10 +551,6 @@ function vumeterShow() {
         stop.at({ offset: 1.0, color: 'green',  opacity: 1 })
     });
     background_grad.from(1,0).to(0,0).attr({id: "background_grad"});
-
-    // get x and y position (for 1 character)
-    char_pos_x_y                 = get_txt_sizes(graph, "9", false);
-    char_pos_x_y_column_name     = get_txt_sizes(graph, "9", true);
 
     wsOpen();
 
