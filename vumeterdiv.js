@@ -367,7 +367,7 @@ function novlign(){
       this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');
       //draw level empty (its not a level but a reverse level, the background is the level and we draw a rect that hide the deff between the lign size and the actual level)
       this.level = graph.rect().attr({fill: '#262626'}); // the color back, actually grey
-      this.dbNum = graph.text("").move(this.x + this.size_x/2 + margBar, this.y + 13).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');/*vumeter-labelsBoxTxt_CH*/
+      this.dbNum = graph.text("").move(this.x + this.size_x/2 + margBar, this.y + (3*(this.size_y / 4))).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');/*vumeter-labelsBoxTxt_CH*/
     },
     drawlevel : function(graph){
       // draw the level
