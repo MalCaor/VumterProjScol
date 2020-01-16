@@ -4,8 +4,8 @@
 var incrementLign = 29; // incrementation between each ligns
 var nbr_lign_per_col = 16; // number of lign max per columns
 // you can change the size here, the boudry and interior adapt automaticaly
-var size_x = 150;
-var size_y = 17;
+var size_x = 150; // size of the barlevel
+var size_y = 18; // the Y size of ling
 var margBar = 4*size_y - 10;
 
 var background  = null;
@@ -323,6 +323,20 @@ function novlign(){
     draw : function(graph, x, y, i){
         // draw static stuff
 
+        // set up the vars
+        // remember the loc
+        this.x = x;
+        this.y = y;
+        // remember the size of the Ligns
+        this.size_x = size_x;
+        this.size_y = size_y;
+        // pos box boundry
+        this.levelBoxBoudryX = x + margBar;
+        // border
+        this.border = 4;
+        // size of the num (not the actual size of the num but including the marge)
+        this.size_numero = 20;
+
         // box and number
         this.draw_labelBoxAndNumber(graph, x, y, i);
         // level box background
@@ -332,38 +346,21 @@ function novlign(){
     },
     draw_labelBoxAndNumber : function(graph, x, y, i){
       // draw the level box and number
-
-      // chan square size
-      var size = 17;
       // draw the box
-      this.labelsBox_CH = graph.rect(size, size).move(x, y).addClass('vumeter-labelsBox_LimiterOff_CH');
+      this.labelsBox_CH = graph.rect(this.size_y, this.size_y).move(x, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw the number
       this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15").attr({fill: '#f7f7f7'});
     },
     draw_levelBox : function(graph, x, y){
       // draw a level box
 
-      // set up the vars
-      // remember the loc
-      this.x = x;
-      this.y = y;
-      // remember the size of the Ligns
-      this.size_x = size_x;
-      this.size_y = size_y;
-      // pos box boundry
-      this.levelBoxBoudryX = x /*+ 20*/ + margBar;
-      // border
-      this.border = 4;
-      // size of the num (not the actual size of the num but including the marge)
-      this.size_numero = 20;
-
       // draw the boundry
-      this.levelBoxBoudry = graph.rect(this.size_x, this.size_y).move(this.levelBoxBoudryX + this.size_numero, this.y).attr({fill: "#fcf9f9"});
-      // draw the inside of the level box
+      this.levelBoxBoudry = graph.rect(this.size_x, this.size_y).move(this.levelBoxBoudryX + this.size_numero, this.y).attr({fill: "#fcf9f9"}); // the boundry are currently white
+      // draw the inside of the level box, with the gradient background
       this.levelBox = graph.rect(this.size_x - (this.border), this.size_y - (this.border)).move(this.levelBoxBoudryX + this.size_numero + (this.border/2), this.y + (this.border/2)).fill(background_grad);
-      // draw a rect for the libel
+      // draw a rect for the libel (next to the number)
       this.lbBox = graph.rect((3*this.size_y), this.size_y).move(x + this.size_numero, y).addClass('vumeter-labelsBox_LimiterOff_CH');
-      // draw empty label text
+      // draw empty label text (contain the )
       this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');
       //draw level empty (its not a level but a reverse level, the background is the level and we draw a rect that hide the deff between the lign size and the actual level)
       this.level = graph.rect().attr({fill: '#262626'}); // the color back, actually grey
@@ -386,8 +383,6 @@ function novlign(){
       db = dbLevel(stats);
       // barLevel change in function of the db and the size of each lign, i think
       barLevel = this.dbBar(db);
-      // arbitrary size y
-      size_y = 17;
       // verif change
       if(this.prev_vumeter_stats == null){
         // prev_vumeter_stats is normally never null, but it's to avoid error, we never know
