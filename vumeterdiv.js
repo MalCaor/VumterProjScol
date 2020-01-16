@@ -1,11 +1,11 @@
 // NEW VUMETER CODE  // WARNING: in developement
 
 // var
-var incrementLign = 29; // incrementation between each ligns
-var nbr_lign_per_col = 16; // number of lign max per columns
+var incrementLign     = 29; // incrementation between each ligns
+var nbr_lign_per_col  = 16; // number of lign max per columns
 // you can change the size here, the boudry and interior adapt automaticaly
-var size_x = 150; // size of the barlevel
-var size_y = 18; // the Y size of ling
+var size_x  = 150; // size of the barlevel
+var size_y  = 18; // the Y size of ling
 var margBar = 4*size_y - 10; // the marge of the level
 
 /* band drawing from channel area */
@@ -337,7 +337,7 @@ function novlign(){
       // draw the box
       this.labelsBox_CH = graph.rect(this.size_y, this.size_y).move(x, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw the number
-      this.number = graph.text((i).toString()).move(x, y + 5 /* the +5 is to center the number */).attr("font-size", "15").attr({fill: '#f7f7f7'});
+      this.number = graph.text((i).toString()).move(this.x, this.y + (2*(this.size_y / 4))).attr("font-size", "15").attr({fill: '#f7f7f7'});
     },
     draw_levelBox : function(graph, x, y){
       // draw a level box
@@ -347,9 +347,9 @@ function novlign(){
       // draw the inside of the level box, with the gradient background
       this.levelBox = graph.rect(this.size_x - (this.border), this.size_y - (this.border)).move(this.levelBoxBoudryX + this.size_numero + (this.border/2), this.y + (this.border/2)).fill(background_grad);
       // draw a rect for the libel (next to the number)
-      this.lbBox = graph.rect((3*this.size_y), this.size_y).move(x + this.size_numero, y).addClass('vumeter-labelsBox_LimiterOff_CH');
+      this.lbBox = graph.rect((3*this.size_y), this.size_y).move(this.x + this.size_numero, this.y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw empty label text (contain the )
-      this.lbTxt = graph.text("").move(this.x + this.size_numero, y + this.size_y - this.border).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');
+      this.lbTxt = graph.text("").move(this.x + this.size_numero, this.y + this.size_y - this.border).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');
       //draw level empty (its not a level but a reverse level, the background is the level and we draw a rect that hide the deff between the lign size and the actual level)
       this.level = graph.rect().attr({fill: '#262626'}); // the color back, actually grey
       this.dbNum = graph.text("").move(this.x + this.size_x/2 + margBar, this.y + (3*(this.size_y / 4))).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');/*vumeter-labelsBoxTxt_CH*/
