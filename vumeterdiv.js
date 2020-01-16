@@ -288,6 +288,7 @@ function novlign(){
     // the libel box and txt
     lbBox              : [null],
     lbTxt              : [null],
+    background_grad    : [null],
 
     // function
     init : function(graph, x_lign, y_lign, i){
@@ -342,13 +343,13 @@ function novlign(){
       // draw the boundry
       this.levelBoxBoudry = graph.rect(size_x, size_y).move(x + 20 + margBar, y).attr({fill: "#fcf9f9"});
       // draw the inside of the level box
-      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22 + margBar, y + 2).attr({fill: "#0e0f0e"});
+      this.levelBox = graph.rect(size_x - 4, size_y - 4).move(x + 22 + margBar, y + 2).fill(background_grad);
       // draw a rect for the libel
       this.lbBox = graph.rect(3*size_y, size_y).move(x + 20, y).addClass('vumeter-labelsBox_LimiterOff_CH');
       // draw empty label text
       this.lbTxt = graph.text("").move(x + 20, y + size_y - 4).attr("font-size", "13").attr({fill: '#f7f7f7'});
       //draw level empty
-      this.level = graph.rect().move(x + 20 + margBar + 2, y + 2);
+      this.level = graph.rect().move(x + 20 + margBar + 2 + size_x - 4, y + 2).attr({fill: '#262626'});
       this.dbNum = graph.text("").move(x + size_x/2 + margBar, y + 13).attr("font-size", "13").attr({fill: '#f7f7f7'});
       // remember the loc
       this.x = x;
@@ -384,7 +385,8 @@ function novlign(){
       }else if (this.prev_vumeter_stats !== db) {
         // if different, redraw stuff
         // this is the bar level
-        this.level.size(barLevel, size_y - 4).attr({fill: "#2c6d1d"});
+        this.level.size((this.size_x - barLevel - 4), size_y - 4);
+        this.level.move((this.x + 20 + margBar + 2 + this.size_x) - (this.size_x - barLevel), this.y + 2)
         // this is the db number
         this.dbNum.node.textContent = (precise_round(db, 1).toString());
         this.lbTxt.node.textContent = ((this.CH_CONTENT_MAP[identifiant]).toString());
@@ -557,7 +559,7 @@ function vumeterShow() {
         stop.at({ offset: 0.2, color: 'green',  opacity: 1 })
         stop.at({ offset: 1.0, color: 'green',  opacity: 1 })
     });
-    background_grad.from(1,0).to(0,0);
+    background_grad.from(1,0).to(0,0).attr({id: "background_grad"});
 
     // get x and y position (for 1 character)
     char_pos_x_y                 = get_txt_sizes(graph, "9", false);

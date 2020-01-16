@@ -1,0 +1,86 @@
+#vumeterdiv
+{
+    margin:2px;
+}
+
+
+.vumeter-labelsBox_LimiterOff_CH
+{
+    fill:blue;
+}
+
+.vumeter-labelsBox_LimiterOn_CH
+{
+    fill:red;
+}
+
+.vumeter-labelsBoxTxt_CH
+{
+    fill:white;
+    font-size:12px;
+    text-anchor:middle;
+}
+
+
+.vumeter-labelsContentTxtOff_CH
+{
+    fill:DarkRed;
+    font-size:12px;
+    text-anchor:end;
+}
+.vumeter-labelsContentTxtOn_CH
+{
+    fill:white;
+    font-size:12px;
+    text-anchor:end;
+}
+
+
+.vumeter-labelsLeveldB_CH
+{
+    fill:white;
+    font-size:12px;
+    text-anchor:middle;
+}
+
+.vumeter-vol_mask_areaOff
+{
+    fill:Maroon;
+    stroke:white;
+    stroke-width:1;
+    opacity:1;
+}
+
+.vumeter-vol_mask_areaOn
+{
+    fill:black;
+    stroke:white;
+    stroke-width:1;
+    opacity:1;
+}
+
+.vumeter-vol_background_area
+{
+    stroke:white;
+    stroke-width:1;
+    opacity:1;
+}
+
+
+.vumeter-Column_Name
+{
+    fill:#808000; /* Qt.darkYellow */
+    font-size:18px;
+    text-anchor:middle;
+}
+
+
+.vumeter-limiter
+{
+    stroke:red;
+    stroke-width:1;
+    opacity:1;
+}
+.lign{
+  fill: url(../js/vumeterdiv.js#background_grad);
+}
