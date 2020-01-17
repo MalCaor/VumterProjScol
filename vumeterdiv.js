@@ -1,5 +1,5 @@
 // NEW VUMETER CODE  // WARNING: in developement
-
+"use strict";
 // var
 var incrementLign     = 29; // incrementation between each ligns
 var nbr_lign_per_col  = 16; // number of lign max per columns
@@ -35,8 +35,7 @@ speakersLimiters[LBL_NEW] = 0;
 var idx = 0;
 
 // list_column
-"use strict";
-list_column = [];
+var list_column = [];
 
 /* const labels */
 var LBL_IN    = "in";
@@ -217,6 +216,7 @@ function novColumn(){
 
           // draw background
           var vol_background_area = graph.rect(dc_x, dc_y).fill(background_grad).move(sub_pos_offset_x+dcleft+tmp_last_max_pos_x, sub_pos_offset_y+dctop);
+          vol_background_area.addClass('vumeter-vol_background_area');
           this.vol_background_area[idxArray]   = vol_background_area;
       },
       update : function(vumeter_stats, graph){
@@ -356,11 +356,11 @@ function novlign(){
       // verif if there is change and redraw if there is
 
       // set the id
-      identifiant = id;
+      var identifiant = id;
       // set up the db
-      db = dbLevel(stats);
+      var db = dbLevel(stats);
       // barLevel change in function of the db and the size of each lign, i think
-      barLevel = this.dbBar(db);
+      var barLevel = this.dbBar(db);
       // verif change
       if(this.prev_vumeter_stats == null){
         // prev_vumeter_stats is normally never null, but it's to avoid error, we never know
@@ -414,15 +414,21 @@ function init(graph){
 
   // here are the columns :
   // create the column object
-	list_column = [
+  var decoder1_16  = novColumn();
+  var decoder16_24 = novColumn();
+  var outputs1_16  = novColumn();
+  var outputs17_32 = novColumn();
+  var HDMI_DOWNMIX = novColumn();
+  var AUX_In       = novColumn();
+	list_column  = [
 		// declare all columns
-		decoder1_16  = novColumn(),
-    decoder16_24 = novColumn(),
-		outputs1_16  = novColumn(),
-		outputs17_32 = novColumn(),
-		HDMI_DOWNMIX = novColumn(),
-    AUX_In       = novColumn()
-	]
+		decoder1_16,
+    decoder16_24,
+		outputs1_16,
+		outputs17_32,
+		HDMI_DOWNMIX,
+    AUX_In
+	];
 	// set up the column name
 	list_column[0].column_Name = "DECODER 01 to 16";
   list_column[1].column_Name = "DECODER 17 to 24";
@@ -481,6 +487,7 @@ function wsOpen() {
     vumeterdiv.websocket = new WebSocket(url);
     var websocket        = vumeterdiv.websocket;
     var graph            = vumeterdiv.graph;
+    var reopen_timeout;
 
     websocket.onopen = function () {
         // close and re-open websocket after 2 min
