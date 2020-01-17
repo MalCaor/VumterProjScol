@@ -35,7 +35,8 @@ speakersLimiters[LBL_NEW] = 0;
 var idx = 0;
 
 // list_column
-var list_column = [];
+"use strict";
+list_column = [];
 
 /* const labels */
 var LBL_IN    = "in";
@@ -213,21 +214,9 @@ function novColumn(){
           this.dc_x[idxArray]          = dc_x;
           var dc_y = sub_bar_y - dctop -dcbottom;
 
-          // draw gradient
+          // draw background
           var vol_background_area = graph.rect(dc_x, dc_y).fill(background_grad).move(sub_pos_offset_x+dcleft+tmp_last_max_pos_x, sub_pos_offset_y+dctop);
-          vol_background_area.addClass('vumeter-vol_background_area');
-          if        ( this.column_Name == "DECODER" ) {
-              this.vol_background_area[idxArray]   = vol_background_area;
-          } else if ( this.column_Name == "LBL_OUT" ) {
-              this.vol_background_area[idxArray]   = vol_background_area;
-          } else if ( this.column_Name == "OUTPUTS 01 to 16" ) {
-              this.vol_background_area[idxArray]   = vol_background_area;
-          } else if ( this.column_Name == "OUTPUTS 17 to 32" ) {
-              this.vol_background_area[idxArray]   = vol_background_area;
-          } else if (this.column_Name  == "HDMI / DOWNMIX" ) {
-              this.vol_background_area[idxArray]   = vol_background_area;
-          }
-
+          this.vol_background_area[idxArray]   = vol_background_area;
       },
       update : function(vumeter_stats, graph){
       	// update the column
