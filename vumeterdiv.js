@@ -173,15 +173,16 @@ function novColumn(){
         // set up var for the ligns
         var y_lign = sub_bar_y + incrementLign;
         var x_lign = sub_bar_x - 115; // the 115 is here to slide the interrior or the col to the left
-        var i      = 1;
+        // the number of the lign
+        var i = 0;
+        if(this.column_Name == "DECODER 17 to 24" || this.column_Name == "OUTPUTS 17 to 32"){
+          i = 17; // start at 17
+        }else {
+          i = 1; // start at 1
+        }
         // the forEach that create the ligns
         this.list_lign.forEach(function(element){
           // draw the square
-          if(i == (nbr_lign_per_col + 1)){
-            // if more than 16 go on the other collum
-            y_lign = sub_bar_y + 27;
-            x_lign = 2*graph.width()/8 + 10 ; // temporaire ou tout du moins je le crois
-          }
           element.init(graph, x_lign, y_lign, i); // init the ligns
           i      = i + 1; // increment i to verify if it doesn't go more that 16
           y_lign = y_lign + incrementLign; // go down for each ligns
@@ -415,24 +416,27 @@ function init(graph){
   // create the column object
 	list_column = [
 		// declare all columns
-		decoder      = novColumn(),
+		decoder1_16  = novColumn(),
+    decoder16_24 = novColumn(),
 		outputs1_16  = novColumn(),
 		outputs17_32 = novColumn(),
 		HDMI_DOWNMIX = novColumn(),
     AUX_In       = novColumn()
 	]
 	// set up the column name
-	list_column[0].column_Name = "DECODER";
-	list_column[3].column_Name = "OUTPUTS 01 to 16";
-	list_column[4].column_Name = "OUTPUTS 17 to 32";
-	list_column[1].column_Name = "HDMI / DOWNMIX";
-  list_column[2].column_Name = "AUX In";
+	list_column[0].column_Name = "DECODER 01 to 16";
+  list_column[1].column_Name = "DECODER 17 to 24";
+	list_column[4].column_Name = "OUTPUTS 01 to 16";
+	list_column[5].column_Name = "OUTPUTS 17 to 32";
+	list_column[2].column_Name = "HDMI / DOWNMIX";
+  list_column[3].column_Name = "AUX In";
   // number of ligns for each column
-  list_column[0].nbr_lign = 24;
-  list_column[3].nbr_lign = 16;
+  list_column[0].nbr_lign = 16;
+  list_column[1].nbr_lign = 8;
   list_column[4].nbr_lign = 16;
-  list_column[1].nbr_lign = 4;
-  list_column[2].nbr_lign = 2;
+  list_column[5].nbr_lign = 16;
+  list_column[2].nbr_lign = 4;
+  list_column[3].nbr_lign = 2;
 
 	/* total graph area */
   var g_x     = graph.width();
@@ -457,7 +461,9 @@ function init(graph){
   var i=0; // i is to count the number of iteration
   list_column.forEach(function(element){
       //init and draw
-      if (element.column_Name !== "AUX In" && i !=0 /* this made the Aux In collumn go under the HDMI one */){
+      if (element.column_Name == "AUX In" || element.column_Name == "HDMI / DOWNMIX" || i == 0 /* this made the Aux In collumn go under the HDMI one */){
+        sub_bar_x = sub_bar_x;
+      }else{
         sub_bar_x = sub_bar_x + 2*(g_x/8);
       }
       element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y); // init stuff
@@ -505,12 +511,17 @@ function wsOnMessage(message, graph){
 }
 function updateCol(vumeter_stats, graph){
   // update the each columns
-  list_column[0].update(vumeter_stats[LBL_IN], graph);
-  var sliceto = 16; // it's the slice between 1-16 to 17-32
-  list_column[3].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
-  list_column[4].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
-  list_column[1].update(vumeter_stats[LBL_AUX], graph);
-  list_column[2].update(vumeter_stats[LBL_AUXIN], graph);
+
+  // DECODER
+  var sliceto = 16
+  list_column[0].update((vumeter_stats[LBL_IN].slice(0, sliceto)), graph);// 1 to 16
+  list_column[1].update((vumeter_stats[LBL_IN].slice(sliceto, 24)), graph);// 16 to 24
+  // OUTPUTS
+  list_column[4].update((vumeter_stats[LBL_OUT].slice(0, sliceto)), graph);
+  list_column[5].update((vumeter_stats[LBL_OUT].slice(sliceto, 32)), graph);
+  // AUX
+  list_column[2].update(vumeter_stats[LBL_AUX], graph);
+  list_column[3].update(vumeter_stats[LBL_AUXIN], graph);
 }
 
 function wsReopen() {
