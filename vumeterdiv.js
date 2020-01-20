@@ -31,11 +31,11 @@ var speakersLimiters      = [];
 speakersLimiters[LBL_OLD] = 0;
 speakersLimiters[LBL_NEW] = 0;
 
+// list_column
+var list_column = [null];
+
 // idx
 var idx = 0;
-
-// list_column
-var list_column = [];
 
 /* const labels */
 var LBL_IN    = "in";
@@ -108,6 +108,9 @@ function novColumn(){
   	    this.dc_x                = [null];
   	    this.vol_background_area = [null];
       },
+      clear_listLign : function(){
+        this.list_lign = [null];
+      },
       verif_change : function(vumeter_stats, graph) {
       	// verif if there is change and if yes draw
 
@@ -118,6 +121,8 @@ function novColumn(){
           if(i < vumeter_stats.length){ // the if is here to verify that there is enough info in vumeter_stats
             element.verif_change(vumeter_stats[i][0], vumeter_stats[i][1], graph); // we call the verif_change func for each ligns with the info in vumeter_stats
             i++; // increment i to count the iteration
+          }else{
+            element.noInfo(graph);
           }
         });
         // limiter warning, the limiter is a seperate var in vumeter_stats and only apply on the outputs
@@ -186,6 +191,11 @@ function novColumn(){
           i      = i + 1; // increment i to verify if it doesn't go more that 16
           y_lign = y_lign + incrementLign; // go down for each ligns
         });
+
+        // null var
+        y_lign = null;
+        x_lign = null;
+        i      = null;
       },
       drawColumnName : function(graph, idx, sub_bar_x, sub_bar_y){
           // draw the column name
@@ -202,6 +212,9 @@ function novColumn(){
               //avoid  error in case of (column_name == "AUX In" && inputs_aux.AUXIn_isEnable == false)
           }
 
+          // null var
+          column_name = null;
+          labelCol    = null;
       },
       drawBack : function(graph, background_grad, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y){
           // draw the background and line
@@ -218,6 +231,11 @@ function novColumn(){
           var vol_background_area = graph.rect(dc_x, dc_y).fill(background_grad).move(sub_pos_offset_x+dcleft+tmp_last_max_pos_x, sub_pos_offset_y+dctop);
           vol_background_area.addClass('vumeter-vol_background_area');
           this.vol_background_area[idxArray]   = vol_background_area;
+
+          // null vars
+          idxArray            = null;
+          dc_y                = null;
+          vol_background_area = null;
       },
       update : function(vumeter_stats, graph){
       	// update the column
@@ -256,13 +274,13 @@ function novlign(){
     // prev state
     prev_vumeter_stats : [null],
     // the position of the lign
-    x                  : [null],
-    y                  : [null],
+    x                  : null,
+    y                  : null,
     // the text that display the level in db
     dbNum              : [null],
     // the size of the lign bar
-    size_x             : [null],
-    size_y             : [null],
+    size_x             : null,
+    size_y             : null,
     // the libel box and txt
     lbBox              : [null],
     lbTxt              : [null],
@@ -291,10 +309,10 @@ function novlign(){
       this.levelBoxBoudry     = [null];
       // prev state
       this.prev_vumeter_stats = [null];
-      this.x                  = [null];
-      this.y                  = [null];
-      this.size_x             = [null];
-      this.size_y             = [null];
+      this.x                  = null;
+      this.y                  = null;
+      this.size_x             = null;
+      this.size_y             = null;
       this.lbBox              = [null];
       this.lbTxt              = [null];
     },
@@ -319,8 +337,6 @@ function novlign(){
         this.draw_labelBoxAndNumber(graph, x, y, i);
         // level box background
         this.draw_levelBox(graph, x, y);
-
-        var idxArray = idx-1; // je sais pas ce que c'est mais j'ai peur de le suprimer, TODO : what is this?
     },
     draw_labelBoxAndNumber : function(graph, x, y, i){
       // draw the level box and number
@@ -343,10 +359,6 @@ function novlign(){
       //draw level empty (its not a level but a reverse level, the background is the level and we draw a rect that hide the deff between the lign size and the actual level)
       this.level = graph.rect().attr({fill: '#262626'}); // the color back, actually grey
       this.dbNum = graph.text("").move(this.x + this.size_x/2 + margBar, this.y + (3*(this.size_y / 4))).attr("font-size", "13").addClass('vumeter-labelsBoxTxt_CH');/*vumeter-labelsBoxTxt_CH*/
-    },
-    drawlevel : function(graph){
-      // draw the level
-      // why is this empty?
     },
     update : function(vumeter_stats, graph){
         // update by calling verif_change
@@ -386,6 +398,11 @@ function novlign(){
       }
       // replace the prev_vumeter_stats with the new one
       this.prev_vumeter_stats = db;
+
+      // null some vars
+      identifiant   = null;
+      db            = null;
+      barLevel      = null;
     },
     dbBar : function(db){
       // make the bar length in function of the db
@@ -400,6 +417,14 @@ function novlign(){
         this.labelsBox_CH.removeClass('vumeter-labelsContentTxtOff_CH');
         this.labelsBox_CH.addClass('vumeter-labelsBox_LimiterOff_CH');
       }
+    },
+    noInfo : function(graph){
+      // if there is no info in the json (to many ligns)
+      this.level.size((this.size_x - this.dbBar(-100) - (this.border)), size_y - (this.border));
+      this.level.move((this.x + this.size_numero + margBar + (this.border/2) + this.size_x) - (this.size_x - this.dbBar(-100)), this.y + (this.border/2));
+      // this is the db number
+      this.dbNum.node.textContent = ("no Info in the JSON");
+      this.lbTxt.node.textContent = ("no Info in the JSON");
     }
   }
   // return the lign object
@@ -475,6 +500,14 @@ function init(graph){
       element.init(graph, idx, sub_bar_x, sub_bar_y, sub_pos_offset_x, sub_pos_offset_y); // init stuff
       i = i + 1; // increment i
   });
+
+  // null var to save ram
+  g_x               = null;
+  g_y               = null;
+  sub_bar_y         = null;
+  sub_bar_x         = null;
+  sub_pos_offset_y  = null;
+  sub_pos_offset_x  = null;
 }
 
 function wsOpen() {
@@ -492,7 +525,7 @@ function wsOpen() {
     websocket.onopen = function () {
         // close and re-open websocket after 2 min
         // to avoid stacking too many frames in buffer when computer is slow
-        reopen_timeout = setTimeout(wsReopen, 2 * 60 * 1000);
+        reopen_timeout = setTimeout(wsReopen, 60 * 60 * 1000);
     };
     websocket.onclose = function () {
         if(reopen_timeout !== null) {
@@ -510,11 +543,19 @@ function wsOpen() {
     };
 
     init(graph);
+
+    // null vars
+    prefix = 'ws://';
+    url              = null;
+    websocket        = null;
+    graph            = null;
+    reopen_timeout   = null;
 }
 
 function wsOnMessage(message, graph){
   var vumeter_stats = JSON.parse(message.data);
   updateCol(vumeter_stats, graph);
+  vumeter_stats = [null];
 }
 function updateCol(vumeter_stats, graph){
   // update the each columns
@@ -529,6 +570,8 @@ function updateCol(vumeter_stats, graph){
   // AUX
   list_column[2].update(vumeter_stats[LBL_AUX], graph);
   list_column[3].update(vumeter_stats[LBL_AUXIN], graph);
+
+  sliceto = [null];
 }
 
 function wsReopen() {
@@ -592,6 +635,9 @@ function vumeterShow() {
             });
         }
     }, 1000);
+
+    // null graph
+    graph = null;
 }
 
 function vumeterHide() {
