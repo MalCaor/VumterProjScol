@@ -583,6 +583,7 @@ function vumeterShow() {
     $("#vumeterdiv").show();
     // instancy SVG graph
     if (!(vumeterdiv.hasOwnProperty('graph'))) {
+        var SVG = document.getElementsByTagName('vumeterdiv')[0];
         var vumeter_graph = SVG('vumetergraph');
         //Default size 1013x226
         vumeterdiv.graph = vumeter_graph.size(1024,512);
